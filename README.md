@@ -31,19 +31,52 @@ Runs on your own machine using your personal Telegram account, so there's no
    Driftgram to use, and create an app (any name/platform works). You'll get
    an `api_id` and `api_hash`.
 
-3. **Install dependencies:**
+3. **Create and activate a virtual environment** (recommended, so
+   Driftgram's dependencies stay out of your global Python install). From
+   the project folder:
+
+   PowerShell:
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+   Command Prompt (cmd.exe):
+   ```bat
+   python -m venv .venv
+   .venv\Scripts\activate.bat
+   ```
+
+   Git Bash / WSL / Linux / macOS:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate      # Git Bash on Windows: source .venv/Scripts/activate
+   ```
+
+   Your prompt should now be prefixed with `(.venv)`. If PowerShell refuses
+   to run the activate script ("running scripts is disabled on this
+   system"), allow it for your user once:
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+   ```
+
+   `.venv/` is already in `.gitignore`. To leave the environment later, run
+   `deactivate`. You need to activate it again in every new terminal before
+   running Driftgram (or call the interpreter directly - see below).
+
+4. **Install dependencies** (with the venv active):
    ```
    pip install -r requirements.txt
    ```
 
-4. **Configure credentials:** copy `.env.example` to `.env` and fill in
+5. **Configure credentials:** copy `.env.example` to `.env` and fill in
    `TG_API_ID` / `TG_API_HASH`.
 
-5. **Configure your folders:** copy `config.example.yaml` to `config.yaml`
+6. **Configure your folders:** copy `config.example.yaml` to `config.yaml`
    and edit the `roots:` list to point at the D: drive folders you want
    synced, plus any per-folder ignore patterns.
 
-6. **First run:**
+7. **First run:**
    ```
    python -m src.main
    ```
@@ -122,3 +155,10 @@ Simplest option: use Task Scheduler to run
 window) at login, working directory set to this project folder. For a first
 run, use `python -m src.main` in a normal terminal so you can complete the
 phone/code login prompt interactively.
+
+If you set up a virtual environment, point Task Scheduler at the venv's
+interpreter by absolute path instead of relying on activation - e.g.
+program `D:\driftgram-sync-tool\.venv\Scripts\pythonw.exe` with arguments
+`-m src.main` and "Start in" set to `D:\driftgram-sync-tool`. The same
+trick works from any terminal without activating: `.venv\Scripts\python -m
+src.main`.
