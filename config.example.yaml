@@ -6,12 +6,12 @@ telegram:
   target: "me"
 
 sync:
-  poll_interval_seconds: 20        # fallback check for remote changes (live updates also work while running)
-  delete_remote_on_local_delete: false   # if true, deleting a local file also deletes its Telegram copy
-  delete_local_on_remote_delete: false   # if true, deleting the Telegram message also deletes the local file (live only)
-  max_file_size_mb: 1900           # Telegram cap is ~2000MB for normal accounts, ~4000MB with Premium
-  use_default_ignores: true        # bakes in .git, node_modules, __pycache__, Thumbs.db, etc.
-  debounce_seconds: 2.0            # wait this long after the last change before uploading a file
+  poll_interval_seconds: 20 # fallback check for remote changes (live updates also work while running)
+  delete_remote_on_local_delete: false # if true, deleting a local file also deletes its Telegram copy
+  delete_local_on_remote_delete: false # if true, deleting the Telegram message also deletes the local file (live only)
+  max_file_size_mb: 1900 # Telegram cap is ~2000MB for normal accounts, ~4000MB with Premium
+  use_default_ignores: true # bakes in .git, node_modules, __pycache__, Thumbs.db, etc.
+  debounce_seconds: 2.0 # wait this long after the last change before uploading a file
 
 # Each folder you want synced. "alias" is a short stable name used to tag files on
 # the Telegram side - keep it once set, even if you rename the local folder.
@@ -34,5 +34,14 @@ roots:
 # Uses .gitignore syntax.
 global_ignore:
   - "*.iso"
+  - "*.tmp"
+  - "node_modules/"
+  - "_pycache_/"
+  - "*.pyc"
+  - "*.pyo"
+  - "*.pyd"
+  - "prisma/generated/"
+  - ".venv/"
+  - "venv/"
 
 state_db_path: "manifest.db"
