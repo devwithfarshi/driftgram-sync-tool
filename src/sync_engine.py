@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 from typing import Dict, Optional
 
-from telethon import TelegramClient
+from telethon import TelegramClient, utils
 from telethon.tl.custom.message import Message
 
 from .config import AppConfig, RootConfig
@@ -43,6 +43,10 @@ class SyncEngine:
             r.alias: IgnoreMatcher(r, config.global_ignore, config.sync) for r in config.roots
         }
         self._upload_lock = asyncio.Semaphore(3)
+        # Resolved peer id of the sync target, filled in by resolve_target().
+        # Only used to filter channel delete events - private-chat deletions
+        # arrive without any chat id at all (see handle_remote_delete).
+        self.target_chat_id: Optional[int] = None
 
     # ---------- helpers ----------
 
@@ -64,6 +68,12 @@ class SyncEngine:
         return size > self.config.sync.max_file_size_mb * 1024 * 1024
 
     # ---------- startup ----------
+
+    async def resolve_target(self) -> None:
+        try:
+            self.target_chat_id = utils.get_peer_id(await self.client.get_entity(self.target))
+        except Exception:
+            logger.warning("Could not resolve target '%s' to a chat id", self.target, exc_info=True)
 
     async def initial_scan(self) -> None:
         for root in self.config.roots:
@@ -198,6 +208,48 @@ class SyncEngine:
         stat = dest_path.stat()
         file_hash = hash_file(dest_path)
         self.state.upsert(root.alias, rel_path, stat.st_size, stat.st_mtime, file_hash, message.id)
+
+    async def handle_remote_delete(self, deleted_ids, chat_id: Optional[int]) -> None:
+        """Mirror a Telegram message deletion by removing the local file.
+
+        Telegram only reports *where* a deletion happened for channels; for
+        private chats and small groups (including Saved Messages) the update
+        carries bare message ids and no peer. That is safe to work with,
+        because non-channel message ids are unique per account - so the
+        manifest lookup below identifies the file unambiguously. When a chat
+        id *is* present we still check it, to avoid acting on deletions in
+        some unrelated channel that happens to reuse an id.
+        """
+        if not self.config.sync.delete_local_on_remote_delete:
+            return
+        if chat_id is not None and self.target_chat_id is not None and chat_id != self.target_chat_id:
+            return
+
+        for message_id in deleted_ids or []:
+            record = self.state.get_by_message_id(message_id)
+            if record is None:
+                continue  # not a file we track
+            root = self.roots_by_alias.get(record.root_alias)
+            if root is None:
+                continue
+            abs_path = (root.path / record.rel_path).resolve()
+            if self._resolve_root_for_path(abs_path) is None:
+                logger.warning("Refusing to delete outside configured sync root: %s", record.rel_path)
+                continue
+
+            logger.info("Remote deletion of msg %s -> removing %s", message_id, record.rel_path)
+            # No `await` between the unlink and the manifest delete: the local
+            # watcher will fire on this deletion, and _handle_local_delete must
+            # find no record (otherwise, with delete_remote_on_local_delete on,
+            # it would try to delete the already-deleted message).
+            try:
+                abs_path.unlink()
+            except FileNotFoundError:
+                pass
+            except OSError:
+                logger.exception("Failed to delete local file %s", record.rel_path)
+                continue
+            self.state.delete(record.root_alias, record.rel_path)
 
     async def poll_remote_once(self) -> None:
         last_id = int(self.state.get_meta("last_offset_id") or 0)

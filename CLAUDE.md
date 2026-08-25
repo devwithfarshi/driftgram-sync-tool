@@ -68,6 +68,16 @@ src/main.py           Wires it together: Telethon login, initial scan,
                       starts one watchdog Observer per root, registers the
                       live NewMessage handler, runs the poll loop, handles
                       shutdown.
+
+src/restore.py        One-shot CLI (`python -m src.restore`) for pulling
+                      files back down from Telegram. Walks the FULL chat
+                      history (unlike poll_remote_once, which only looks at
+                      messages newer than last_offset_id), so it can
+                      recover a file deleted locally after upload. Writes
+                      the manifest after each download so the watcher
+                      treats the restored file as already-synced. Must not
+                      run while src.main is running - they share the
+                      Telegram session file and the manifest.
 ```
 
 Data flow for a local edit: watchdog → debounce → `handle_local_change` →
@@ -113,11 +123,24 @@ Telegram. Things worth covering for any change to `sync_engine.py`:
   this check.
 - **Deleted Telegram messages leave no history.** `iter_messages` simply
   won't show them, so retroactive delete-sync (a delete that happened while
-  the tool was offline) isn't reliable — this is a Telegram API limitation,
-  not a bug. `delete_local_on_remote_delete` in config is a placeholder for
-  a future live `events.MessageDeleted` handler; it isn't wired up yet.
-  `delete_remote_on_local_delete` *does* work reliably since it's driven by
-  the local filesystem watcher directly.
+  the tool was offline) isn't possible — this is a Telegram API limitation,
+  not a bug. `delete_local_on_remote_delete` is handled live by
+  `SyncEngine.handle_remote_delete`, driven by an `events.MessageDeleted`
+  handler in `main.py`; it only catches deletions that happen while the tool
+  is running. `delete_remote_on_local_delete` has the same live-only
+  constraint, since it's driven by the filesystem watcher.
+- **`events.MessageDeleted` must be registered without `chats=`.** Telegram
+  omits the peer entirely for deletions in private chats and small groups
+  (Saved Messages included), so `event.chat_id` is `None` and Telethon's
+  `chats=` filter would silently drop every such event. `handle_remote_delete`
+  instead identifies the file through `get_by_message_id` — safe because
+  non-channel message ids are unique per account — and only compares
+  `chat_id` when one is actually present (i.e. channel targets).
+- **The remote-delete path has no `await` between `unlink()` and
+  `state.delete()`.** That's deliberate: the watcher fires on the deletion we
+  just performed, and `_handle_local_delete` must find no manifest record,
+  or (with `delete_remote_on_local_delete` on) it would try to delete the
+  already-deleted message. Don't insert an await between those two lines.
 - **Nested/overlapping roots aren't supported.** `_resolve_root_for_path`
   returns the first root a path resolves under; don't configure one
   `roots:` entry as a subdirectory of another.

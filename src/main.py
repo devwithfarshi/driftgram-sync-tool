@@ -40,6 +40,7 @@ async def run(config_path: str) -> None:
     logger.info("Logged in to Telegram as %s", getattr(me, "username", None) or me.id)
 
     engine = SyncEngine(client, config, state)
+    await engine.resolve_target()
 
     logger.info("Running initial scan of configured folders...")
     await engine.initial_scan()
@@ -56,6 +57,14 @@ async def run(config_path: str) -> None:
     @client.on(events.NewMessage(chats=config.target))
     async def _on_new_message(event):
         await engine.handle_remote_message(event.message)
+
+    # Deliberately NOT filtered with chats=: Telegram omits the peer entirely
+    # for deletions in private chats and small groups (Saved Messages
+    # included), so a chats= filter would silently drop every such event.
+    # handle_remote_delete identifies the file by message id via the manifest.
+    @client.on(events.MessageDeleted())
+    async def _on_deleted_message(event):
+        await engine.handle_remote_delete(event.deleted_ids, event.chat_id)
 
     poll_task = asyncio.create_task(engine.poll_remote_loop())
 

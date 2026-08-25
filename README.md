@@ -119,20 +119,40 @@ Ignore patterns use `.gitignore` syntax. With `use_default_ignores: true`
 `desktop.ini`, `*.tmp`, Office lock files (`~$*`), and Windows system
 folders.
 
+## Restoring a file you deleted locally
+
+With the default `delete_remote_on_local_delete: false`, deleting a local
+file leaves its Telegram copy untouched - but the running tool won't bring
+it back, because it only inspects messages newer than the offset it has
+already processed. To pull files back down, stop Driftgram (both share one
+Telegram session and one manifest) and run the restore tool, which scans the
+whole chat history:
+
+```
+python -m src.restore --list        # see every synced path in Telegram, and which are missing on disk
+python -m src.restore              # download everything missing locally
+python -m src.restore report.docx  # restore just the paths matching a fragment or glob
+python -m src.restore report.docx --force   # overwrite the local copy with Telegram's
+```
+
+Restored files are written into the manifest with their real size, mtime and
+hash, so when you restart Driftgram the watcher sees them as already synced
+and doesn't re-upload them. Add `--include-ignored` to restore a path that
+now matches one of your ignore patterns.
+
 ## Limitations, worth knowing
 
 - **Telegram's file size cap** is ~2GB for regular accounts (~4GB with
   Telegram Premium). Files over `max_file_size_mb` are skipped and logged,
   not silently dropped.
-- **Deleting a message on Telegram doesn't leave a trace in history** -
-  Telegram just removes it. That means retroactive deletion sync (catching a
-  delete that happened while the tool was offline) isn't reliable; only
-  deletions that happen *while the tool is running* can be handled if you
-  extend the tool to listen for `events.MessageDeleted`. For now,
-  `delete_local_on_remote_delete` is a placeholder for that future
-  extension - local deletion sync (config option
-  `delete_remote_on_local_delete`) works reliably since it's driven by your
-  own filesystem, which the tool watches directly.
+- **Deletion sync only works while Driftgram is running.** Both directions
+  (`delete_remote_on_local_delete` and `delete_local_on_remote_delete`) are
+  driven by live events - the filesystem watcher one way, Telegram's
+  `MessageDeleted` update the other. Telegram leaves no trace of a deleted
+  message in chat history, so a deletion that happened while the tool was
+  stopped can never be detected afterwards; it will simply be ignored on the
+  next start. Delete things with the tool running if you want the other side
+  to follow.
 - **Nested/overlapping sync roots aren't supported** - keep your configured
   folders separate from each other.
 - **Rate limits:** Telegram may briefly throttle very rapid bulk uploads
