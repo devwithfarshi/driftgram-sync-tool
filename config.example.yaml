@@ -1,0 +1,38 @@
+# Copy this file to config.yaml and edit it.
+
+telegram:
+  # "me" = your own Saved Messages (recommended: private, simple, no extra setup).
+  # You can also use a private channel/group username or numeric chat id, e.g. "-1001234567890"
+  target: "me"
+
+sync:
+  poll_interval_seconds: 20        # fallback check for remote changes (live updates also work while running)
+  delete_remote_on_local_delete: false   # if true, deleting a local file also deletes its Telegram copy
+  delete_local_on_remote_delete: false   # currently only enforced live; see README limitations
+  max_file_size_mb: 1900           # Telegram cap is ~2000MB for normal accounts, ~4000MB with Premium
+  use_default_ignores: true        # bakes in .git, node_modules, __pycache__, Thumbs.db, etc.
+  debounce_seconds: 2.0            # wait this long after the last change before uploading a file
+
+# Each folder you want synced. "alias" is a short stable name used to tag files on
+# the Telegram side - keep it once set, even if you rename the local folder.
+roots:
+  - path: "D:/Projects"
+    alias: "projects"
+    ignore:
+      - "node_modules/"
+      - ".next/"
+      - "dist/"
+      - "*.log"
+
+  - path: "D:/Documents"
+    alias: "documents"
+    ignore:
+      - "*.tmp"
+      - "~$*"
+
+# Ignore patterns applied to every root, in addition to each root's own list above.
+# Uses .gitignore syntax.
+global_ignore:
+  - "*.iso"
+
+state_db_path: "manifest.db"

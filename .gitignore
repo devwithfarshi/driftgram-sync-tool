@@ -1,0 +1,10 @@
+.env
+*.session
+*.session-journal
+manifest.db
+manifest.db-*
+__pycache__/
+*.pyc
+.venv/
+venv/
+config.yaml
