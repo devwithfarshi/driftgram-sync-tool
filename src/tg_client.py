@@ -1,10 +1,10 @@
-"""Telethon helpers: caption encoding/decoding, upload, download, delete.
+"""Driftgram: Telethon helpers - caption encode/decode, upload, download, delete.
 
 Every file is sent with force_document=True so Telegram never recompresses
 or transcodes it - what comes back down is byte-for-byte what went up.
 The caption is how the tool maps a Telegram message back to a local path:
 
-    DSYNC
+    DRIFTGRAM
     <root alias>
     <relative path>
 """
@@ -16,9 +16,9 @@ from typing import Optional, Tuple
 
 from telethon import TelegramClient
 
-logger = logging.getLogger("sync.telegram")
+logger = logging.getLogger("driftgram.telegram")
 
-CAPTION_PREFIX = "DSYNC"
+CAPTION_PREFIX = "DRIFTGRAM"
 
 
 def make_caption(alias: str, rel_path: str) -> str:
@@ -50,7 +50,7 @@ async def upload_file(client: TelegramClient, target, local_path: Path, alias: s
 
 async def download_message(client: TelegramClient, message, dest_path: Path) -> None:
     dest_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = dest_path.with_name(dest_path.name + ".dsync-tmp")
+    tmp_path = dest_path.with_name(dest_path.name + ".driftgram-tmp")
     logger.info("Downloading -> %s", dest_path)
     await client.download_media(message, file=str(tmp_path))
     tmp_path.replace(dest_path)

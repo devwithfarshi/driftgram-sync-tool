@@ -1,4 +1,4 @@
-# Copy this file to config.yaml and edit it.
+# Driftgram Sync Tool configuration. Copy this file to config.yaml and edit it.
 
 telegram:
   # "me" = your own Saved Messages (recommended: private, simple, no extra setup).

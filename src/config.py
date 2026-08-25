@@ -1,4 +1,4 @@
-"""Configuration loading for the D-drive <-> Telegram sync tool."""
+"""Configuration loading for Driftgram Sync Tool (D-drive <-> Telegram)."""
 from __future__ import annotations
 
 import os
@@ -79,7 +79,7 @@ def load_config(config_path: str = "config.yaml", env_path: Optional[str] = None
 
     api_id_raw = os.environ.get("TG_API_ID")
     api_hash = os.environ.get("TG_API_HASH")
-    session_name = os.environ.get("TG_SESSION_NAME", "d_drive_sync")
+    session_name = os.environ.get("TG_SESSION_NAME", "driftgram")
 
     if not api_id_raw or not api_hash:
         print(

@@ -1,4 +1,4 @@
-"""Filesystem watcher that reports debounced create/modify/delete events.
+"""Driftgram: filesystem watcher reporting debounced create/modify/delete events.
 
 Runs in watchdog's own background thread; hands each settled change back to
 the asyncio event loop where the rest of the tool runs.
@@ -14,7 +14,7 @@ from typing import Awaitable, Callable, Dict
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-logger = logging.getLogger("sync.watcher")
+logger = logging.getLogger("driftgram.watcher")
 
 OnChange = Callable[[Path, bool], Awaitable[None]]
 

@@ -1,4 +1,4 @@
-"""Core two-way sync orchestration between local folders and a Telegram chat."""
+"""Driftgram: core two-way sync between local folders and a Telegram chat."""
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +16,7 @@ from .ignore_rules import IgnoreMatcher
 from .state import StateStore
 from .tg_client import delete_messages, download_message, parse_caption, upload_file
 
-logger = logging.getLogger("sync.engine")
+logger = logging.getLogger("driftgram.engine")
 
 HASH_CHUNK = 1024 * 1024
 

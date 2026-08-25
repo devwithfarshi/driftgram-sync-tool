@@ -1,4 +1,4 @@
-"""Entry point: two-way background sync between selected D-drive folders and Telegram.
+"""Driftgram entry point: two-way background sync of D-drive folders and Telegram.
 
 Usage:
     python -m src.main [path-to-config.yaml]
@@ -27,7 +27,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("sync.main")
+logger = logging.getLogger("driftgram.main")
 
 
 async def run(config_path: str) -> None:
@@ -59,7 +59,7 @@ async def run(config_path: str) -> None:
 
     poll_task = asyncio.create_task(engine.poll_remote_loop())
 
-    logger.info("Sync running. Watching %d folder(s). Press Ctrl+C to stop.", len(observers))
+    logger.info("Driftgram running. Watching %d folder(s). Press Ctrl+C to stop.", len(observers))
 
     try:
         await client.run_until_disconnected()

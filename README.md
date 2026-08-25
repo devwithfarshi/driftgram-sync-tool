@@ -1,9 +1,9 @@
-# D-Drive ↔ Telegram Sync
+# Driftgram Sync Tool
 
-A background tool that keeps chosen folders on your D: drive two-way synced
-with a Telegram chat (by default, your own "Saved Messages"). Runs on your
-own machine using your personal Telegram account, so there's no 50MB bot
-upload limit.
+Driftgram is a background tool that keeps chosen folders on your D: drive
+two-way synced with a Telegram chat (by default, your own "Saved Messages").
+Runs on your own machine using your personal Telegram account, so there's no
+50MB bot upload limit.
 
 ## How it works
 
@@ -28,7 +28,7 @@ upload limit.
 
 2. **Get Telegram API credentials** (one-time, free): go to
    <https://my.telegram.org/apps>, log in with the Telegram account you want
-   the tool to use, and create an app (any name/platform works). You'll get
+   Driftgram to use, and create an app (any name/platform works). You'll get
    an `api_id` and `api_hash`.
 
 3. **Install dependencies:**
@@ -115,7 +115,7 @@ folders.
   Messages as the `target` if you want to keep the sync traffic visually
   separate from your normal chat history.
 
-## Running in the background on Windows
+## Running Driftgram in the background on Windows
 
 Simplest option: use Task Scheduler to run
 `pythonw -m src.main` (note `pythonw`, not `python`, to avoid a console

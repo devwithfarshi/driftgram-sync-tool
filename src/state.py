@@ -1,4 +1,4 @@
-"""SQLite-backed manifest of what's been synced.
+"""Driftgram Sync Tool: SQLite-backed manifest of what has been synced.
 
 This is what makes two-way sync safe: every file's last-known size/mtime/hash
 and Telegram message id are recorded here. Both the local watcher and the

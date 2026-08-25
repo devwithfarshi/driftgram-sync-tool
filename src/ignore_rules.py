@@ -1,4 +1,4 @@
-"""Gitignore-style ignore matching per sync root."""
+"""Driftgram Sync Tool: gitignore-style ignore matching per sync root."""
 from __future__ import annotations
 
 from typing import List

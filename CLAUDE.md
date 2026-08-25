@@ -4,11 +4,12 @@ Guidance for Claude (or anyone else) working in this repository.
 
 ## What this is
 
-A background tool that keeps chosen folders on a Windows D: drive two-way
-synced with a Telegram chat, using a personal Telegram account via Telethon
-(not the Bot API, to avoid the 50MB bot upload cap). Runs as a long-lived
-Python process: a filesystem watcher on one side, a Telegram client on the
-other, reconciled through a local SQLite manifest.
+**Driftgram Sync Tool** ("Driftgram") - a background tool that keeps chosen
+folders on a Windows D: drive two-way synced with a Telegram chat, using a
+personal Telegram account via Telethon (not the Bot API, to avoid the 50MB
+bot upload cap). Runs as a long-lived Python process: a filesystem watcher
+on one side, a Telegram client on the other, reconciled through a local
+SQLite manifest.
 
 ## The one invariant that matters most
 
@@ -47,7 +48,7 @@ src/state.py          StateStore: SQLite manifest (files table + meta
 
 src/tg_client.py      Telethon upload/download primitives + caption
                       encode/decode. Caption format:
-                          DSYNC
+                          DRIFTGRAM
                           <root alias>
                           <relative path>
                       Every upload uses force_document=True so Telegram
