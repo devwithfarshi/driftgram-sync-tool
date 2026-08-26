@@ -11,7 +11,13 @@
 ;   * uninstalling never needs elevation either.
 
 #define AppName "Driftgram"
-#define AppVersion "1.0.0"
+; Guarded, because Inno's preprocessor applies /DAppVersion=x from the command
+; line FIRST and a plain #define would then overwrite it - so every installer
+; would come out labelled 1.0.0 no matter which tag built it. #ifndef makes the
+; literal a fallback for a bare `iscc driftgram.iss` instead.
+#ifndef AppVersion
+  #define AppVersion "1.0.0"
+#endif
 #define AppPublisher "Driftgram"
 #define AppExeName "driftgram.exe"
 

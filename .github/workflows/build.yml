@@ -11,10 +11,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  # Tag builds take their version from the tag; everything else is a dev build.
-  DRIFTGRAM_VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && '' || '0.0.0-dev' }}
-
 jobs:
   test:
     name: Tests (${{ matrix.os }})
@@ -92,10 +88,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Set version from tag
-        if: startsWith(github.ref, 'refs/tags/v')
+      # One place, one mechanism. A workflow-level `env:` block would have been
+      # tidier to look at, but env blocks take precedence over values written to
+      # GITHUB_ENV, so a workflow-level default would silently win over the
+      # version resolved here and ship an installer with an empty version in its
+      # filename.
+      - name: Determine version
         shell: bash
-        run: echo "DRIFTGRAM_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "DRIFTGRAM_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "DRIFTGRAM_VERSION=0.0.0-dev" >> "$GITHUB_ENV"
+          fi
 
       - name: Build
         env:
