@@ -1,0 +1,8 @@
+# Desktop app dependencies. The command-line tool needs only requirements.txt,
+# so a headless/server install never has to pull in Qt.
+-r requirements.txt
+
+# Essentials, not the full PySide6: it drops QtWebEngine, Qt3D, multimedia and
+# the rest, which this app never touches and which would roughly triple the
+# size of the installer.
+PySide6-Essentials>=6.8,<7

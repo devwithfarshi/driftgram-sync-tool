@@ -1,10 +1,89 @@
+# ---------------------------------------------------------------------------
+# Credentials. Anything below this heading is equivalent to being logged into
+# the Telegram account Driftgram runs as - never commit it.
+# ---------------------------------------------------------------------------
+
+# .env holds TG_API_ID / TG_API_HASH. The wildcard catches the variants people
+# make by hand (.env.local, .env.backup, .env.old) without needing to think
+# about it; .env.example is the one deliberate exception and is re-included.
 .env
+.env.*
+!.env.example
+
+# The Telegram session file IS the login. SQLite writes sidecars next to it
+# (-journal, -wal, -shm) that can hold the same data, so match all of them -
+# src/app/supervisor.py deletes exactly these on sign-out for the same reason.
 *.session
-*.session-journal
+*.session-*
+
+# config.yaml may contain api_hash (the setup wizard writes it there) as well
+# as personal folder paths. config.example.yaml is a separate name and stays.
+config.yaml
+
+# ---------------------------------------------------------------------------
+# Per-machine state. Not secret, but meaningless on anyone else's computer.
+# ---------------------------------------------------------------------------
+
+# The sync manifest, plus its WAL sidecars (state.py sets journal_mode=WAL).
 manifest.db
 manifest.db-*
+
+driftgram.lock
+driftgram.log
+driftgram.log.*
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+.eggs/
 .venv/
 venv/
-config.yaml
+env/
+
+# ---------------------------------------------------------------------------
+# Tooling
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------------------
+
+# PyInstaller work and output directories, the staged AppDir and .deb trees,
+# the downloaded appimagetool, and the Inno Setup output all land in one of
+# these two.
+build/
+dist/
+
+# Icons are generated from src/gui/icons.py at build time by
+# packaging/make_icons.py, so they are output, not source.
+packaging/generated/
+
+# Stray PyInstaller specs. Running `pyinstaller packaging/entry.py` instead of
+# passing the real spec drops a generated entry.spec in the working directory;
+# this catches it. Anchored with a leading slash so it applies to the repo root
+# ONLY - packaging/driftgram.spec is hand-written and must stay tracked, so do
+# not relax this to a bare *.spec.
+/*.spec
+
+# Output of `python tools/screenshot.py`.
+screenshots/
+
+# ---------------------------------------------------------------------------
+# Editors and OS clutter
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+desktop.ini
+.DS_Store

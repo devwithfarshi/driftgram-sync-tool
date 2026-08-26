@@ -1,184 +1,297 @@
-# Driftgram Sync Tool
+# Driftgram
 
-Driftgram is a background tool that keeps chosen folders on your D: drive
-two-way synced with a Telegram chat (by default, your own "Saved Messages").
-Runs on your own machine using your personal Telegram account, so there's no
-50MB bot upload limit.
+Keep the folders you choose backed up to your own Telegram account — and get
+changes back the other way too. Save a file on your PC and it appears in
+Telegram. Send a file to Telegram from your phone and it lands in the right
+folder on your PC.
 
-## How it works
+Everything runs on your own machine, using your own Telegram account. Your
+files go to **Saved Messages** by default: a private chat only you can see.
+Nothing passes through anybody else's server, and there is no account to
+create, no subscription, and no storage limit beyond Telegram's own.
+
+There are two ways to use it:
+
+| | |
+|---|---|
+| **Driftgram app** | A normal desktop app for Windows and Linux. Setup wizard, folder picker, tray icon, restore browser. **Start here.** |
+| **Command line** | The original `python -m src.main`. Same engine, same config, no Qt required — handy on a headless machine. |
+
+---
+
+# Using the app
+
+## Install
+
+### Windows
+
+1. Download `Driftgram-x.y.z-Setup.exe` from the
+   [Releases page](../../releases).
+2. Run it. It installs for your user only, so there is no administrator
+   prompt.
+3. Driftgram opens and walks you through setup.
+
+> Windows SmartScreen may warn you the first time, because the installer
+> isn't code-signed (a certificate costs a few hundred dollars a year).
+> Click **More info → Run anyway** if you're happy to.
+
+### Linux
+
+**AppImage — works on any distribution, no installation:**
+
+```bash
+chmod +x Driftgram-x.y.z-x86_64.AppImage
+./Driftgram-x.y.z-x86_64.AppImage
+```
+
+**Debian / Ubuntu / Mint:**
+
+```bash
+sudo apt install ./driftgram_x.y.z_amd64.deb
+```
+
+Then find Driftgram in your applications menu.
+
+## Setting it up
+
+The first run asks for four things. The only fiddly one is the second.
+
+**1. Connect to Telegram.** Telegram requires every app that talks to it to be
+registered — including this one, on your account. It's free and takes about a
+minute. Driftgram gives you a button that opens the right page; you log in,
+open *API development tools*, fill in any app name, and copy two values
+(`api_id` and `api_hash`) back into Driftgram.
+
+> Why not skip this? Because the alternative is shipping one shared key inside
+> the app for everybody. If Telegram ever rate-limited or banned that key,
+> every Driftgram user would break at once. Your own key can't be taken away
+> by someone else's misuse.
+
+**2. Sign in.** Phone number, then the login code Telegram sends you (it
+arrives in the Telegram app if you're signed in elsewhere, otherwise by SMS),
+then your two-step password if you have one.
+
+**3. Choose folders.** Pick the folders you want backed up. Tick any of the
+presets to skip things that aren't worth uploading — build output, video
+files, logs.
+
+**4. Preferences.** Whether to start at login, whether deletions should be
+mirrored, and what to do if the same file changes in two places at once.
+
+That's it. Driftgram starts backing up immediately and keeps running in the
+notification area. The first pass through a large folder can take a while;
+you can close the window and leave it to work.
+
+## The app, page by page
+
+**Status** — whether everything is backed up, what's transferring right now,
+how many files and how much data. Pause and resume here.
+
+**Folders** — add and remove folders, and edit each one's skip rules.
+Removing a folder only stops watching it; the copies already in Telegram are
+left alone.
+
+**Activity** — a plain-language log of what has happened, with errors and
+anything needing attention picked out in colour.
+
+**Restore** — see everything Telegram is holding, including files you've since
+deleted from your computer, and bring back whatever you need. Tick and click.
+
+**Settings** — account, where backups go, conflict handling, deletion
+mirroring, start-at-login, and a few advanced knobs.
+
+## If the same file changes in both places
+
+Say you edit a document on your PC while it's offline, and meanwhile a newer
+copy of the same document arrives from your phone. Driftgram's default is
+**keep both**: your version stays exactly where it is, and Telegram's copy is
+saved next to it as `name (from Telegram).ext`. You get a notification, and
+you decide which to keep.
+
+You can change this in Settings to *let Telegram's copy replace mine* or
+*always keep my copy*.
+
+---
+
+# How it works
 
 - Every synced file is uploaded to Telegram as a **document** (never
-  compressed) with a hidden caption that records which folder ("alias") and
-  relative path it belongs to. That's how a file sent from your phone gets
-  put back in the right place on your PC.
-- A local SQLite file (`manifest.db`) remembers the last-known hash of every
-  synced file. This is what stops the classic two-way-sync loop
-  (upload → shows back up as "new" → re-download → re-upload → ...):
-  nothing gets acted on unless its content actually differs from what the
-  manifest last recorded.
-- A filesystem watcher (`watchdog`) catches local changes instantly (with a
-  short debounce so editors don't trigger 5 uploads while saving).
-- A live Telegram event listener catches new messages the moment they
-  arrive; a periodic reconciliation pass (`poll_interval_seconds`) catches
-  anything that happened while the tool was offline.
+  compressed) with a caption recording which folder and relative path it
+  belongs to. That's how a file sent from your phone gets put back in the
+  right place.
+- A local SQLite file (`manifest.db`) remembers the size, timestamp and hash
+  of every synced file. **Nothing is uploaded or downloaded unless its content
+  differs from what the manifest recorded.** This is what stops the classic
+  two-way-sync loop, where an upload reappears as a "new" remote file, gets
+  downloaded, touches the local file, and gets uploaded again forever.
+- A filesystem watcher catches local changes instantly, with a short debounce
+  so an editor saving five times doesn't cause five uploads.
+- A live Telegram listener catches new messages the moment they arrive; a
+  periodic pass catches anything that happened while Driftgram was closed.
 
-## Setup
+## Where Driftgram keeps its own files
 
-1. **Install Python 3.10+** if you don't have it.
+| | Windows | Linux |
+|---|---|---|
+| Settings | `%APPDATA%\Driftgram\config.yaml` | `~/.config/driftgram/config.yaml` |
+| Manifest, session, log | `%APPDATA%\Driftgram\` | `~/.local/share/driftgram/` |
 
-2. **Get Telegram API credentials** (one-time, free): go to
-   <https://my.telegram.org/apps>, log in with the Telegram account you want
-   Driftgram to use, and create an app (any name/platform works). You'll get
-   an `api_id` and `api_hash`.
+Settings → *Driftgram's own files* → **Open this folder** takes you there.
 
-3. **Create and activate a virtual environment** (recommended, so
-   Driftgram's dependencies stay out of your global Python install). From
-   the project folder:
+Uninstalling does **not** delete these. If you reinstall, Driftgram picks up
+where it left off instead of re-uploading everything.
 
-   PowerShell:
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+If a `config.yaml` exists in the current working directory, Driftgram uses
+that instead and keeps everything beside it — which is what makes a git
+checkout self-contained. The installed app ignores this and always uses the
+locations above.
 
-   Command Prompt (cmd.exe):
-   ```bat
-   python -m venv .venv
-   .venv\Scripts\activate.bat
-   ```
+## Worth knowing
 
-   Git Bash / WSL / Linux / macOS:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate      # Git Bash on Windows: source .venv/Scripts/activate
-   ```
+- **File size cap.** Telegram allows about 2 GB per file, or 4 GB with
+  Premium. Anything over your configured limit is skipped and logged, not
+  silently dropped.
+- **Deletion mirroring only works while Driftgram is running.** Telegram keeps
+  no record of a deleted message, so a deletion that happened while the app
+  was closed can never be detected afterwards.
+- **Folders can't be nested inside one another.** Driftgram refuses to add a
+  folder that sits inside — or contains — one you already sync, because a file
+  would then belong to two of them.
+- **Windows can't store some Linux filenames.** A file called `notes:2024.txt`
+  or `aux.log` is legal on Linux and impossible on Windows. Driftgram skips
+  those on the Windows side and tells you which, rather than renaming them
+  behind your back.
+- **Linux watch limits.** Linux caps how many folders one program may watch.
+  On a very large tree you may need:
+  ```bash
+  sudo sysctl fs.inotify.max_user_watches=524288
+  ```
+  Driftgram detects this and tells you, rather than failing with a bare "no
+  space left on device".
+- **Rate limits.** Telegram may throttle a very large first sync. Driftgram
+  pauses and resumes automatically.
 
-   Your prompt should now be prefixed with `(.venv)`. If PowerShell refuses
-   to run the activate script ("running scripts is disabled on this
-   system"), allow it for your user once:
-   ```powershell
-   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-   ```
+## Security
 
-   `.venv/` is already in `.gitignore`. To leave the environment later, run
-   `deactivate`. You need to activate it again in every new terminal before
-   running Driftgram (or call the interpreter directly - see below).
+- Your `config.yaml` contains your `api_hash`, and the `.session` file is
+  equivalent to being logged into your Telegram account. **Never share
+  either.** On Linux both are written owner-only.
+- Driftgram talks to Telegram and nothing else. There is no telemetry, no
+  update check, and no server belonging to anyone else.
+- If you'd rather keep sync traffic out of Saved Messages, create a private
+  channel and set it as the target in Settings.
 
-4. **Install dependencies** (with the venv active):
-   ```
-   pip install -r requirements.txt
-   ```
+---
 
-5. **Configure credentials:** copy `.env.example` to `.env` and fill in
-   `TG_API_ID` / `TG_API_HASH`.
+# For developers
 
-6. **Configure your folders:** copy `config.example.yaml` to `config.yaml`
-   and edit the `roots:` list to point at the D: drive folders you want
-   synced, plus any per-folder ignore patterns.
+## Running from source
 
-7. **First run:**
-   ```
-   python -m src.main
-   ```
-   The first time, Telethon will ask for your phone number, the login code
-   Telegram sends you, and your 2FA password if you have one set. After
-   that it saves a session file (`<TG_SESSION_NAME>.session`) and won't ask
-   again.
+```bash
+python -m venv .venv
+.venv\Scripts\Activate.ps1          # Windows PowerShell
+source .venv/bin/activate            # Linux / macOS / Git Bash
 
-Leave it running in a terminal (or set it up as a scheduled/background task
-- see below) and it will keep syncing in both directions.
-
-## Configuration reference (`config.yaml`)
-
-```yaml
-telegram:
-  target: "me"   # "me" = Saved Messages, or a channel/group username/id
-
-sync:
-  poll_interval_seconds: 20
-  delete_remote_on_local_delete: false
-  delete_local_on_remote_delete: false
-  max_file_size_mb: 1900
-  use_default_ignores: true
-  debounce_seconds: 2.0
-
-roots:
-  - path: "D:/Projects"
-    alias: "projects"        # stable id tagged onto every message - don't change once set
-    ignore:
-      - "node_modules/"
-      - "*.log"
-
-global_ignore:
-  - "*.iso"
+pip install -r requirements-gui.txt  # or requirements.txt for the CLI only
+python -m src.gui                    # desktop app
 ```
 
-Ignore patterns use `.gitignore` syntax. With `use_default_ignores: true`
-(the default), common junk is already excluded: `.git`, `node_modules`,
-`__pycache__`, `.next`, `dist`, `build`, `venv`/`.venv`, `Thumbs.db`,
-`desktop.ini`, `*.tmp`, Office lock files (`~$*`), and Windows system
-folders.
+`python -m src.gui --selftest` checks that Qt, Telethon and watchdog all load
+and exits — useful for verifying a build without opening a window.
 
-## Restoring a file you deleted locally
+## The command-line tool
 
-With the default `delete_remote_on_local_delete: false`, deleting a local
-file leaves its Telegram copy untouched - but the running tool won't bring
-it back, because it only inspects messages newer than the offset it has
-already processed. To pull files back down, stop Driftgram (both share one
-Telegram session and one manifest) and run the restore tool, which scans the
-whole chat history:
+Unchanged, and still fully supported. It needs no Qt.
 
-```
-python -m src.restore --list        # see every synced path in Telegram, and which are missing on disk
-python -m src.restore              # download everything missing locally
-python -m src.restore report.docx  # restore just the paths matching a fragment or glob
-python -m src.restore report.docx --force   # overwrite the local copy with Telegram's
+```bash
+pip install -r requirements.txt
+cp .env.example .env                  # fill in TG_API_ID / TG_API_HASH
+cp config.example.yaml config.yaml    # set your folders
+python -m src.main
 ```
 
-Restored files are written into the manifest with their real size, mtime and
-hash, so when you restart Driftgram the watcher sees them as already synced
-and doesn't re-upload them. Add `--include-ignored` to restore a path that
-now matches one of your ignore patterns.
+Credentials can live in `.env` or in `config.yaml` under `telegram:`. The
+environment wins if both are set.
 
-## Limitations, worth knowing
+Restoring from the command line walks the full chat history:
 
-- **Telegram's file size cap** is ~2GB for regular accounts (~4GB with
-  Telegram Premium). Files over `max_file_size_mb` are skipped and logged,
-  not silently dropped.
-- **Deletion sync only works while Driftgram is running.** Both directions
-  (`delete_remote_on_local_delete` and `delete_local_on_remote_delete`) are
-  driven by live events - the filesystem watcher one way, Telegram's
-  `MessageDeleted` update the other. Telegram leaves no trace of a deleted
-  message in chat history, so a deletion that happened while the tool was
-  stopped can never be detected afterwards; it will simply be ignored on the
-  next start. Delete things with the tool running if you want the other side
-  to follow.
-- **Nested/overlapping sync roots aren't supported** - keep your configured
-  folders separate from each other.
-- **Rate limits:** Telegram may briefly throttle very rapid bulk uploads
-  (e.g. syncing a huge folder for the first time). Telethon handles the
-  standard flood-wait backoff automatically; it'll just pause and resume.
+```bash
+python -m src.restore --list              # what's in Telegram, and what's missing
+python -m src.restore                     # restore everything missing locally
+python -m src.restore report.docx         # restore matching paths only
+python -m src.restore report.docx --force # overwrite the local copy too
+```
 
-## Security notes
+The app and the CLI share a manifest and a Telegram session, so only one may
+run at a time — a lock file enforces this and says which process holds it.
+The app does its restoring in-process, so it never needs stopping first.
 
-- `.env` and the `*.session` file are equivalent to being logged into your
-  Telegram account. Never commit them or share them. The included
-  `.gitignore` already excludes both.
-- Consider using a **dedicated private Telegram channel** instead of Saved
-  Messages as the `target` if you want to keep the sync traffic visually
-  separate from your normal chat history.
+## Tests
 
-## Running Driftgram in the background on Windows
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
-Simplest option: use Task Scheduler to run
-`pythonw -m src.main` (note `pythonw`, not `python`, to avoid a console
-window) at login, working directory set to this project folder. For a first
-run, use `python -m src.main` in a normal terminal so you can complete the
-phone/code login prompt interactively.
+The suite runs against a `FakeClient` and a temp directory tree — no Telegram
+account needed. It covers the manifest invariant (unchanged files aren't
+re-uploaded, downloads don't bounce back up, reprocessing a message id is a
+no-op), conflict handling, deletion in both directions, pause/resume, path
+escaping, config round-tripping, filename portability, and the cross-process
+lock.
 
-If you set up a virtual environment, point Task Scheduler at the venv's
-interpreter by absolute path instead of relying on activation - e.g.
-program `D:\driftgram-sync-tool\.venv\Scripts\pythonw.exe` with arguments
-`-m src.main` and "Start in" set to `D:\driftgram-sync-tool`. The same
-trick works from any terminal without activating: `.venv\Scripts\python -m
-src.main`.
+`python tools/screenshot.py <dir> [--dark]` renders every screen to PNG
+against a stub supervisor, so layout can be reviewed without a Telegram
+account.
+
+## Building installers
+
+```bash
+pip install -r requirements-dev.txt
+python packaging/build.py --installer
+```
+
+Builds for whatever platform you run it on — PyInstaller freezes the local
+interpreter, so there is no cross-compiling. Windows additionally needs
+[Inno Setup 6](https://jrsoftware.org/isdl.php); Linux needs `dpkg-deb` for
+the `.deb` and network access to fetch `appimagetool`.
+
+`.github/workflows/build.yml` does both on a two-runner matrix and attaches
+the results to a GitHub release when a `v*` tag is pushed. Linux packaging
+runs on Ubuntu 22.04 deliberately: an AppImage still links against the host
+glibc, so one built on a newer release won't start on an older one.
+
+## Layout
+
+```
+src/config.py         Loads and saves settings; raises, never exits.
+src/paths.py          Where config/manifest/session/log live per platform.
+src/errors.py         Exceptions carrying messages meant to be read by a user.
+src/events.py         EventBus: how the engine reports progress to a UI.
+src/state.py          StateStore: the SQLite manifest. The source of truth.
+src/ignore_rules.py   gitignore-style matching per folder.
+src/fsutil.py         Cross-platform filename checks, conflict naming, sizes.
+src/tg_client.py      Telethon upload/download and caption encode/decode.
+src/local_watcher.py  watchdog wrapper with per-path debouncing.
+src/sync_engine.py    The orchestrator. Owns the invariant.
+src/main.py           CLI entry point.
+src/restore.py        CLI restore tool.
+
+src/app/              Running it as an application, with no Qt involved:
+    supervisor.py       the engine on its own thread, driven from anywhere
+    instance_lock.py    one process per data directory
+    autostart.py        start at login (registry / XDG autostart)
+    logging_setup.py    rotating log file
+
+src/gui/              PySide6 desktop app:
+    app.py              bootstrap, single instance, wiring
+    onboarding.py       first-run setup wizard
+    main_window.py      sidebar + pages
+    page_*.py           status, folders, activity, restore, settings
+    tray.py             notification-area icon
+    bridge.py           engine thread -> Qt thread, safely
+    theme.py, icons.py, widgets.py
+
+packaging/            PyInstaller spec, icon generation, installers, build.py
+tools/screenshot.py   Render every screen to PNG for review
+```

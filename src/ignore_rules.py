@@ -5,12 +5,17 @@ from typing import List
 
 import pathspec
 
-from .config import DEFAULT_IGNORES, RootConfig, SyncSettings
+from .config import DEFAULT_IGNORES, INTERNAL_IGNORES, RootConfig, SyncSettings
 
 
 class IgnoreMatcher:
     def __init__(self, root: RootConfig, global_ignore: List[str], settings: SyncSettings):
-        patterns: List[str] = []
+        # INTERNAL_IGNORES is applied unconditionally, before anything the user
+        # controls: those patterns cover the tool's own scratch files, which
+        # live inside a watched folder while a download is in flight. Leaving
+        # them matchable would let a slow download's half-written .driftgram-tmp
+        # be picked up by the watcher and uploaded as if it were a real file.
+        patterns: List[str] = list(INTERNAL_IGNORES)
         if settings.use_default_ignores:
             patterns.extend(DEFAULT_IGNORES)
         patterns.extend(global_ignore)

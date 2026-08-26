@@ -104,6 +104,43 @@ class StateStore:
         )
         return [FileRecord(*row) for row in cur.fetchall()]
 
+    def all_files(self) -> "list[FileRecord]":
+        cur = self._conn.execute(
+            "SELECT root_alias, rel_path, local_size, local_mtime, local_hash, tg_message_id, updated_at "
+            "FROM files ORDER BY root_alias, rel_path"
+        )
+        return [FileRecord(*row) for row in cur.fetchall()]
+
+    def recent(self, limit: int = 50) -> "list[FileRecord]":
+        """Most recently synced files - what the app shows on first open."""
+        cur = self._conn.execute(
+            "SELECT root_alias, rel_path, local_size, local_mtime, local_hash, tg_message_id, updated_at "
+            "FROM files ORDER BY updated_at DESC LIMIT ?",
+            (limit,),
+        )
+        return [FileRecord(*row) for row in cur.fetchall()]
+
+    def stats(self) -> "tuple[int, int]":
+        """(files tracked, total bytes) - the headline numbers on the status page."""
+        cur = self._conn.execute(
+            "SELECT COUNT(*), COALESCE(SUM(local_size), 0) FROM files WHERE tg_message_id IS NOT NULL"
+        )
+        count, total = cur.fetchone()
+        return int(count or 0), int(total or 0)
+
+    def count_for_root(self, root_alias: str) -> int:
+        cur = self._conn.execute("SELECT COUNT(*) FROM files WHERE root_alias = ?", (root_alias,))
+        return int(cur.fetchone()[0] or 0)
+
+    def forget_root(self, root_alias: str) -> None:
+        """Drop every record for a folder the user stopped syncing.
+
+        Only the local bookkeeping goes - the Telegram copies stay put, so
+        removing a folder from the app is never destructive.
+        """
+        self._conn.execute("DELETE FROM files WHERE root_alias = ?", (root_alias,))
+        self._conn.commit()
+
     def get_meta(self, key: str) -> Optional[str]:
         cur = self._conn.execute("SELECT value FROM meta WHERE key = ?", (key,))
         row = cur.fetchone()

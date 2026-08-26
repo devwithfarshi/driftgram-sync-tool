@@ -1,5 +1,5 @@
 telethon>=1.36,<2.0
 watchdog>=4.0
-pathspec>=0.12
+pathspec>=0.12,<2.0
 python-dotenv>=1.0
 PyYAML>=6.0

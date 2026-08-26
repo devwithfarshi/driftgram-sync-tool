@@ -1,9 +1,19 @@
-# Driftgram Sync Tool configuration. Copy this file to config.yaml and edit it.
+# Driftgram configuration. Copy this file to config.yaml and edit it.
+#
+# You only need this file if you're running the command-line tool. The desktop
+# app writes its own copy in your user settings folder, through its setup
+# wizard - you never have to edit YAML to use it.
 
 telegram:
   # "me" = your own Saved Messages (recommended: private, simple, no extra setup).
   # You can also use a private channel/group username or numeric chat id, e.g. "-1001234567890"
   target: "me"
+
+  # Credentials from https://my.telegram.org/apps. You can put them here or in
+  # a .env file (see .env.example) - the environment wins if both are set.
+  # api_id: 1234567
+  # api_hash: "your_api_hash_here"
+  # session_name: "driftgram"
 
 sync:
   poll_interval_seconds: 20 # fallback check for remote changes (live updates also work while running)
@@ -13,8 +23,17 @@ sync:
   use_default_ignores: true # bakes in .git, node_modules, __pycache__, Thumbs.db, etc.
   debounce_seconds: 2.0 # wait this long after the last change before uploading a file
 
+  # What to do when Telegram has a newer copy of a file you also changed
+  # locally without it being uploaded yet:
+  #   keep_both    save Telegram's copy as "name (from Telegram).ext" and leave
+  #                yours alone. Nothing is ever lost. (default)
+  #   remote_wins  overwrite your local file with Telegram's copy
+  #   local_wins   keep your file, don't download
+  conflict_policy: keep_both
+
 # Each folder you want synced. "alias" is a short stable name used to tag files on
 # the Telegram side - keep it once set, even if you rename the local folder.
+# Folders must not be nested inside one another.
 roots:
   - path: "D:/Projects"
     alias: "projects"
@@ -36,7 +55,7 @@ global_ignore:
   - "*.iso"
   - "*.tmp"
   - "node_modules/"
-  - "_pycache_/"
+  - "__pycache__/"
   - "*.pyc"
   - "*.pyo"
   - "*.pyd"
@@ -44,4 +63,12 @@ global_ignore:
   - ".venv/"
   - "venv/"
 
+# Desktop-app preferences. The command-line tool ignores this section entirely.
+app:
+  start_at_login: false
+  minimize_to_tray: true
+  notifications: true
+  setup_complete: false
+
+# Relative paths are resolved next to this config file.
 state_db_path: "manifest.db"

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Driftgram
+GenericName=Folder Backup
+Comment=Keep your folders backed up to your own Telegram account
+Exec=driftgram %U
+Icon=driftgram
+Terminal=false
+Categories=Utility;Archiving;Network;FileTransfer;
+Keywords=backup;sync;telegram;cloud;files;
+StartupWMClass=driftgram
+StartupNotify=true
