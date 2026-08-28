@@ -1,9 +1,17 @@
-# Driftgram
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-lockup-dark.png">
+    <img src="docs/images/logo-lockup-light.png" alt="Driftgram" width="360">
+  </picture>
+</h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build](https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml/badge.svg)](https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml)
-[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
-[![Platform: Windows | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)](#install)
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+  <a href="https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml"><img alt="Build" src="https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml/badge.svg"></a>
+  <a href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/devwithfarshi/driftgram-sync-tool"></a>
+  <a href="https://www.python.org/downloads/"><img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-blue.svg"></a>
+  <a href="#install"><img alt="Platform: Windows | Linux" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg"></a>
+</p>
 
 Keep the folders you choose backed up to your own Telegram account — and get
 changes back the other way too. Save a file on your PC and it appears in
@@ -268,6 +276,11 @@ re-uploaded, downloads don't bounce back up, reprocessing a message id is a
 no-op), conflict handling, deletion in both directions, pause/resume, path
 escaping, config round-tripping, filename portability, and the cross-process
 lock.
+
+[`docs/BRAND.md`](docs/BRAND.md) documents the mark, the gradient and both
+palettes, and `python tools/make_brand_assets.py` regenerates the social card
+and the README lockup from `src/gui/icons.py` — so the logo can't drift from
+the icon the app actually shows.
 
 `python tools/screenshot.py <dir> [--dark]` renders every screen to PNG
 against a stub supervisor, so layout can be reviewed without a Telegram
