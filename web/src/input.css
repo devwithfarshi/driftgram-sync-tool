@@ -12,7 +12,7 @@
    Tokens. Every value here is lifted from docs/BRAND.md, which in turn
    documents src/gui/theme.py - so the site cannot drift from the app. The
    dark palette is the one used, because the app's own dark theme is what the
-   screenshots on this page mostly show.
+   screenshots on this page show.
    -------------------------------------------------------------------------- */
 @theme {
   --color-ink: #15181c;
@@ -24,17 +24,29 @@
 
   --color-cyan: #38b6f1;
   --color-blue: #1c82c4;
+  --color-soft: #1b2c38;
 
   /* From the app's tray status colours: green is "up to date, nothing to do",
-     amber is "needs your attention". Reused here with the same meanings, so
-     the page teaches the app's own vocabulary. */
-  --color-settled: #3dbe6c;
-  --color-attention: #f2b33d;
+     amber is "needs your attention", red is "something failed". Reused here
+     with the same meanings, so the page teaches the app's own vocabulary. */
+  --color-settled: #4ed084;
+  --color-attention: #e3a93b;
+  --color-danger: #f0666b;
 
   --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   --radius-tile: 23%; /* the mark's corner radius, per BRAND.md */
+
+  /* One fluid step per heading level, so nothing needs a breakpoint to stop
+     being either cramped or comical. The h1 ceiling is set by the hero
+     layout rather than by taste: past about 56px the headline takes a fifth
+     line and starts squeezing the screenshot beside it. */
+  --text-h1: clamp(2.35rem, 1.5rem + 3vw, 3.5rem);
+  --text-h2: clamp(1.875rem, 1.5rem + 1.5vw, 2.75rem);
+  --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -58,6 +70,7 @@
     font-family: var(--font-sans);
     font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   /* Keyboard focus stays visible everywhere. */
@@ -70,9 +83,23 @@
   ::selection {
     background: color-mix(in srgb, var(--color-cyan) 35%, transparent);
   }
+
+  /* Every control that does something reads as one. */
+  a[href],
+  button:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+
+  /* Numbers in stat rows and tables should not jitter between states. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 @layer components {
+  /* ---------------------------------------------------------------- type -- */
+
   /* Archivo carries a width axis. Running the display face at 125% width is
      the one type move this page makes: it reads as engineering signage rather
      than the default UI grotesque, without loading a second family. */
@@ -81,17 +108,66 @@
     font-stretch: 125%;
     font-weight: 700;
     letter-spacing: -0.025em;
-    line-height: 0.98;
+    line-height: 1;
   }
 
+  /* Bounded measure plus balanced wrapping. text-wrap is a hint, not a
+     promise - the max-width is what actually keeps a heading off six lines,
+     and the copy still has to read correctly if the browser ignores it. */
+  .h1 {
+    font-size: var(--text-h1);
+    max-inline-size: 18ch;
+    text-wrap: balance;
+  }
+
+  .h2 {
+    font-size: var(--text-h2);
+    max-inline-size: 22ch;
+    text-wrap: balance;
+  }
+
+  .h3 {
+    font-size: var(--text-h3);
+  }
+
+  /* The tracking is what makes this read as a label rather than as small
+     body text, and it is also what makes it too wide for a 375px screen at
+     12px. The size steps down instead of the tracking, which would cost the
+     effect entirely. */
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-muted);
   }
+
+  @media (min-width: 40rem) {
+    .eyebrow {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* A short gradient tick before a section label. Cheaper than an icon, and
+     it ties every section header back to the same mark. The two stops are
+     overridable so a section that recolours its label - the amber one over
+     the limits - doesn't end up with a cyan dash in front of it. */
+  .eyebrow-tick::before {
+    content: "";
+    display: inline-block;
+    width: 1.75rem;
+    height: 2px;
+    margin-right: 0.75rem;
+    vertical-align: 0.25em;
+    background-image: linear-gradient(
+      90deg,
+      var(--tick-from, var(--color-cyan)),
+      var(--tick-to, var(--color-blue))
+    );
+  }
+
+  /* --------------------------------------------------------------- panels -- */
 
   .card {
     background-color: var(--color-panel);
@@ -99,21 +175,83 @@
     border-radius: 0.875rem;
   }
 
+  /* Interactive cards only. A card that does not go anywhere should not imply
+     it does by lifting under the cursor. */
+  .card-link {
+    transition: border-color 200ms ease, background-color 200ms ease,
+      transform 200ms var(--ease-out-quint);
+  }
+
+  .card-link:hover {
+    border-color: color-mix(in srgb, var(--color-cyan) 55%, transparent);
+    background-color: var(--color-raised);
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-link:hover {
+      transform: none;
+    }
+  }
+
+  /* The square that carries a feature icon. Tinted rather than filled, so six
+     of them in a grid do not read as six buttons. */
+  .icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    background-color: var(--color-soft);
+    border: 1px solid color-mix(in srgb, var(--color-cyan) 22%, transparent);
+    color: var(--color-cyan);
+  }
+
+  /* ------------------------------------------------------------- buttons -- */
+
   /* The full brand ramp appears only on primary actions and one hairline
      rule - per BRAND.md, the gradient is an accent, never a background. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    /* 44px floor on every control this page ships. */
+    min-height: 2.75rem;
+    padding-inline: 1.5rem;
+    white-space: nowrap;
+  }
+
   .btn-primary {
     background-image: linear-gradient(135deg, var(--color-cyan), var(--color-blue));
     color: #06111a;
-    font-weight: 600;
-    transition: filter 160ms ease, transform 160ms ease;
+    transition: filter 160ms ease, transform 160ms ease, box-shadow 200ms ease;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 22%, transparent);
   }
 
   .btn-primary:hover {
     filter: brightness(1.08);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 22%, transparent),
+      0 6px 24px -8px color-mix(in srgb, var(--color-cyan) 65%, transparent);
   }
 
   .btn-primary:active {
     transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--color-line);
+    color: var(--color-body);
+    transition: border-color 200ms ease, background-color 200ms ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--color-muted);
+    background-color: var(--color-raised);
   }
 
   .rule-gradient {
@@ -121,6 +259,300 @@
     width: 180px;
     background-image: linear-gradient(90deg, var(--color-cyan), var(--color-blue));
   }
+
+  /* ------------------------------------------------------------ download -- */
+
+  /* The one build that matters to this particular visitor. A hairline of the
+     brand ramp along the top edge marks it out without filling the panel
+     with gradient, which BRAND.md rules out. */
+  .card-featured {
+    position: relative;
+    background-color: var(--color-raised);
+    border-color: color-mix(in srgb, var(--color-cyan) 38%, transparent);
+    overflow: hidden;
+  }
+
+  .card-featured::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    height: 2px;
+    background-image: linear-gradient(90deg, var(--color-cyan), var(--color-blue));
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-cyan) 35%, transparent);
+    background-color: var(--color-soft);
+    padding: 0.3125rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-cyan);
+  }
+
+  /* The full build index under the featured one. Rows rather than a third
+     grid of cards: this is a list to look something up in, and the page
+     already has three card grids above it. */
+  .dl-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    transition: background-color 200ms ease;
+  }
+
+  .dl-row + .dl-row {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .dl-row:hover {
+    background-color: var(--color-raised);
+  }
+
+  .dl-row:hover .dl-arrow {
+    color: var(--color-cyan);
+    translate: 2px 0;
+  }
+
+  .dl-arrow {
+    color: var(--color-muted);
+    transition: color 200ms ease, translate 200ms var(--ease-out-quint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dl-arrow {
+      transition: color 200ms ease;
+    }
+
+    .dl-row:hover .dl-arrow {
+      translate: none;
+    }
+  }
+
+  /* ------------------------------------------------------------ ambience -- */
+
+  /* One soft accent bloom behind the hero, sized in vmax so it stays a wash
+     rather than a visible circle. BRAND.md forbids the gradient as a
+     background; at 12% spread over the whole hero this is an accent, and it
+     is the only one on the page. */
+  .glow {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: -18rem;
+    translate: -50% 0;
+    width: min(78rem, 130vw);
+    aspect-ratio: 2 / 1;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--color-cyan) 12%, transparent) 0%,
+      transparent 68%
+    );
+  }
+
+  /* A faint rule grid, masked so it fades out before the copy starts. It
+     gives the hero depth without giving the eye anything to land on. */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image: linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-line) 55%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-line) 55%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+  }
+
+  /* ---------------------------------------------------------- app window -- */
+
+  /* Chrome around a screenshot, so it reads as an application rather than as
+     a picture pasted into the page. Deliberately generic - no traffic lights,
+     because the same shot stands for both Windows and Linux. */
+  .win {
+    border: 1px solid var(--color-line);
+    border-radius: 0.875rem;
+    background-color: var(--color-panel);
+    overflow: hidden;
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.75);
+  }
+
+  .win-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--color-line);
+    background-color: var(--color-raised);
+  }
+
+  .win-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-line);
+  }
+
+  /* The screenshots are not all one shape - the wizard is 660x560 where the
+     main window is 940x680. A fixed ratio box with object-contain holds the
+     panel at one height through a tab change, so switching tabs cannot shift
+     the page under the reader. */
+  .win-shot {
+    aspect-ratio: 940 / 680;
+    width: 100%;
+    object-fit: contain;
+    background-color: var(--color-ink);
+  }
+
+  /* --------------------------------------------------------------- swipe -- */
+
+  /* Two things here are wider than a phone and scroll sideways inside their
+     card: the loop diagram and the comparison table. An edge that simply
+     stops reads as a clipping bug, so both get a fade over the right edge -
+     switched on by js/main.js only while there is actually more to reach,
+     and off again once you get there. The text hint beside it is plain
+     markup, so the affordance survives with JS off even when the fade
+     doesn't. */
+  .swipe {
+    position: relative;
+  }
+
+  .swipe::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 3.5rem;
+    pointer-events: none;
+    background-image: linear-gradient(to left, var(--color-panel), transparent);
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+
+  .swipe[data-more="true"]::after {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .swipe::after {
+      transition: none;
+    }
+  }
+
+  /* ----------------------------------------------------------------- nav -- */
+
+  .nav-link {
+    position: relative;
+    padding-block: 0.375rem;
+    color: var(--color-muted);
+    transition: color 200ms ease;
+  }
+
+  .nav-link:hover {
+    color: var(--color-body);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    height: 2px;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, var(--color-cyan), var(--color-blue));
+    scale: 0 1;
+    transition: scale 220ms var(--ease-out-quint);
+  }
+
+  /* Set by js/main.js from whichever section is actually on screen. Without
+     JS the links still work, they just never light up. */
+  .nav-link.is-current {
+    color: var(--color-body);
+  }
+
+  .nav-link.is-current::after {
+    scale: 1 1;
+  }
+
+  /* ---------------------------------------------------------------- tabs -- */
+
+  .tab {
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+  }
+
+  .tab:hover {
+    color: var(--color-body);
+    border-color: var(--color-muted);
+  }
+
+  .tab[aria-selected="true"] {
+    color: var(--color-body);
+    border-color: var(--color-cyan);
+    background-color: var(--color-raised);
+  }
+
+  /* ----------------------------------------------------------------- faq -- */
+
+  /* <details> so the FAQ still opens with JS off. Only the marker is
+     restyled; the disclosure behaviour is the browser's. */
+  .faq summary {
+    list-style: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.125rem 1.375rem;
+    font-weight: 600;
+    transition: color 200ms ease;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq summary:hover {
+    color: var(--color-cyan);
+  }
+
+  .faq-chevron {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--color-muted);
+    transition: rotate 240ms var(--ease-out-quint), color 200ms ease;
+  }
+
+  .faq[open] .faq-chevron {
+    rotate: 180deg;
+    color: var(--color-cyan);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-chevron {
+      transition: none;
+    }
+  }
+
+  /* -------------------------------------------------------------- motion -- */
 
   /* Scroll reveal. Sections start shifted and settle once seen.
 
@@ -131,8 +563,7 @@
   html.js .reveal {
     opacity: 0;
     transform: translateY(18px);
-    transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 620ms var(--ease-out-quint), transform 620ms var(--ease-out-quint);
   }
 
   html.js .reveal.is-in {
@@ -146,11 +577,5 @@
       transform: none;
       transition: none;
     }
-  }
-
-  .tab-active {
-    color: var(--color-body);
-    border-color: var(--color-cyan);
-    background-color: var(--color-raised);
   }
 }

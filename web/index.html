@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Driftgram — folders synced through your own Telegram account</title>
+    <title>Driftgram — back up your folders to your own Telegram account</title>
     <meta
       name="description"
-      content="Keep chosen folders backed up to your own Telegram account, both ways. A desktop app for Windows and Linux. No server, no subscription, no storage limit beyond Telegram's own."
+      content="A free desktop app for Windows and Linux that keeps the folders you choose in sync with your own Telegram account, both ways. No server in the middle, no subscription, no storage plan."
     />
     <link rel="canonical" href="https://devwithfarshi.github.io/driftgram-sync-tool/" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Driftgram — folders synced through your own Telegram account" />
+    <meta property="og:title" content="Driftgram — back up your folders to your own Telegram account" />
     <meta
       property="og:description"
       content="Save a file on your PC and it appears in Telegram. Send one from your phone and it lands in the right folder. Free, open source, runs entirely on your machine."
@@ -47,85 +47,288 @@
     >
 
     <!-- ===================== nav ===================== -->
-    <header
-      class="sticky top-0 z-40 border-b border-line/70 bg-ink/85 backdrop-blur-md"
-    >
-      <nav class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5">
-        <a href="#top" class="flex items-center gap-2.5">
+    <header class="sticky top-0 z-40 border-b border-line/70 bg-ink/85 backdrop-blur-md">
+      <nav class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-5" aria-label="Main">
+        <a href="#top" class="flex shrink-0 items-center gap-2.5">
           <img src="assets/mark-192.png" alt="" width="30" height="30" class="rounded-[7px]" />
           <span class="display text-lg">Driftgram</span>
         </a>
 
-        <div class="ml-auto hidden items-center gap-7 text-sm text-muted md:flex">
-          <a href="#how" class="transition-colors hover:text-body">How it works</a>
-          <a href="#screens" class="transition-colors hover:text-body">The app</a>
-          <a href="#setup" class="transition-colors hover:text-body">Setup</a>
-          <a href="#limits" class="transition-colors hover:text-body">Limits</a>
-          <a
-            href="https://github.com/devwithfarshi/driftgram-sync-tool"
-            class="transition-colors hover:text-body"
-            >GitHub</a
-          >
+        <!-- js/main.js marks whichever of these is on screen. Without JS they
+             are still ordinary anchors, just never highlighted. -->
+        <div id="nav-links" class="ml-auto hidden items-center gap-7 text-sm lg:flex">
+          <a href="#how" class="nav-link">How it works</a>
+          <a href="#screens" class="nav-link">The app</a>
+          <a href="#setup" class="nav-link">Setup</a>
+          <a href="#limits" class="nav-link">Limits</a>
+          <a href="#faq" class="nav-link">FAQ</a>
         </div>
 
+        <!-- Star and fork counts are filled in by js/main.js. Until they are
+             (no JS, offline, GitHub rate-limited) the counters stay hidden and
+             this is simply the repo link with its mark - which is also what a
+             narrow phone gets, where the nav has no room for two more numbers
+             beside the logo and the download button. -->
         <a
-          href="#download"
-          class="btn-primary ml-auto rounded-lg px-4 py-2 text-sm md:ml-0"
-          >Download</a
+          id="gh-link"
+          href="https://github.com/devwithfarshi/driftgram-sync-tool"
+          aria-label="Driftgram on GitHub"
+          class="ml-auto flex items-center gap-2.5 rounded-lg border border-line px-3 py-2 text-sm text-muted transition-colors hover:border-muted hover:text-body lg:ml-6"
         >
+          <svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
+          </svg>
+          <span id="gh-stars" class="hidden items-center gap-1 font-mono text-xs">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+              <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path>
+            </svg>
+            <span class="gh-count">0</span>
+            <span class="sr-only">stars</span>
+          </span>
+          <span id="gh-forks" class="hidden items-center gap-1 font-mono text-xs">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+              <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path>
+            </svg>
+            <span class="gh-count">0</span>
+            <span class="sr-only">forks</span>
+          </span>
+        </a>
+
+        <a href="#download" class="btn btn-primary hidden text-sm sm:inline-flex">Download</a>
+
+        <!-- Below lg the section links move in here. A menu button rather than
+             nothing at all: the page is long, and a phone with no way to jump
+             to Setup or Limits has to scroll past everything to reach them. -->
+        <button
+          id="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Open menu"
+          class="flex h-11 w-11 items-center justify-center rounded-lg border border-line text-muted transition-colors hover:border-muted hover:text-body lg:hidden"
+        >
+          <svg
+            id="menu-icon-open"
+            width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+          <svg
+            id="menu-icon-close"
+            width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            class="hidden" aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
       </nav>
+
+      <div id="mobile-menu" hidden class="border-t border-line bg-ink lg:hidden">
+        <div class="mx-auto flex max-w-6xl flex-col px-5 py-2">
+          <a href="#how" class="border-b border-line/60 py-3.5 text-sm text-muted">How it works</a>
+          <a href="#screens" class="border-b border-line/60 py-3.5 text-sm text-muted">The app</a>
+          <a href="#setup" class="border-b border-line/60 py-3.5 text-sm text-muted">Setup</a>
+          <a href="#limits" class="border-b border-line/60 py-3.5 text-sm text-muted">Limits</a>
+          <a href="#faq" class="border-b border-line/60 py-3.5 text-sm text-muted">FAQ</a>
+          <a href="#download" class="btn btn-primary my-4 text-sm">Download</a>
+        </div>
+      </div>
     </header>
 
     <main id="main">
       <!-- ===================== hero ===================== -->
-      <section id="top" class="mx-auto max-w-6xl px-5 pt-16 pb-8 md:pt-24">
-        <p class="eyebrow reveal">Free · Open source · Windows &amp; Linux</p>
+      <section id="top" class="relative isolate overflow-hidden">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="grid-bg" aria-hidden="true"></div>
 
-        <h1 class="display reveal mt-5 text-[2.6rem] sm:text-6xl lg:text-7xl">
-          Your folders,<br />
-          <span
-            class="bg-gradient-to-r from-cyan to-blue bg-clip-text text-transparent"
-            >through your own</span
-          ><br />
-          Telegram account.
-        </h1>
+        <div
+          class="mx-auto grid max-w-6xl items-center gap-12 px-5 pt-14 pb-16 md:pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-12 lg:pt-24"
+        >
+          <div>
+            <p class="eyebrow reveal">Free · Open source · Windows &amp; Linux</p>
 
-        <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted">
-          Save a file on your PC and it appears in Telegram. Send one from your
-          phone and it lands in the right folder. Nothing passes through anybody
-          else's server, and there's no storage limit beyond Telegram's own.
-        </p>
+            <!-- The gradient covers two words, not the sentence. BRAND.md is
+                 explicit that the ramp is an accent; run across four lines it
+                 stops being one. -->
+            <h1 class="display h1 reveal mt-5">
+              Your folders, backed up to
+              <span class="bg-gradient-to-r from-cyan to-blue bg-clip-text text-transparent"
+                >your own Telegram.</span
+              >
+            </h1>
 
-        <div class="reveal mt-9 flex flex-wrap items-center gap-3">
-          <!-- Label and href are set by js/main.js from the visitor's platform,
-               so the obvious button is already the right file. The .exe is the
-               no-JS fallback rather than a dead button. -->
-          <a
-            id="primary-download"
-            href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-Setup.exe"
-            class="btn-primary rounded-xl px-6 py-3.5 text-[0.95rem]"
-            >Download for Windows</a
-          >
-          <a
-            href="#download"
-            class="rounded-xl border border-line px-6 py-3.5 text-[0.95rem] text-muted transition-colors hover:border-muted hover:text-body"
-            >All downloads</a
-          >
+            <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted">
+              Driftgram is a desktop app that keeps the folders you choose in sync
+              with a Telegram chat — both ways. Save a file on your PC and it
+              appears in Telegram. Send one from your phone and it lands in the
+              right folder. Nothing passes through anybody else&rsquo;s server.
+            </p>
+
+            <div class="reveal mt-9 flex flex-wrap items-center gap-3">
+              <!-- Label and href are set by js/main.js from the visitor's
+                   platform, so the obvious button is already the right file.
+                   The .exe is the no-JS fallback rather than a dead button. -->
+              <a
+                id="primary-download"
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-Setup.exe"
+                class="btn btn-primary py-3.5 text-[0.95rem] max-sm:w-full"
+                >Download for Windows</a
+              >
+              <a href="#how" class="btn btn-ghost py-3.5 text-[0.95rem] max-sm:w-full">
+                See how it works
+                <svg
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+            </div>
+
+            <p class="reveal mt-5 font-mono text-xs leading-relaxed text-muted">
+              <span id="version-label">v1.0.0</span> · 27 MB installer · no
+              account to create · MIT licensed
+            </p>
+          </div>
+
+          <!-- The product, above the fold. A page about a desktop app that
+               never shows the desktop app asks the reader to take its word for
+               it. Explicit width/height so the space is reserved before the
+               PNG lands. -->
+          <div class="win reveal">
+            <div class="win-bar">
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="ml-2 font-mono text-[0.7rem] text-muted">Driftgram</span>
+              <span class="ml-auto flex items-center gap-1.5 font-mono text-[0.7rem] text-muted">
+                <span
+                  class="inline-block h-1.5 w-1.5 rounded-full"
+                  style="background-color: var(--color-settled)"
+                  aria-hidden="true"
+                ></span>
+                Up to date
+              </span>
+            </div>
+            <img
+              src="assets/app-status.png"
+              alt="Driftgram's Status screen: a heading reading Everything is backed up, counters for 1,284 files backed up, 6.9 GB total size and 3 folders watched, and a list of recent activity below."
+              width="940"
+              height="680"
+              class="w-full"
+              fetchpriority="high"
+            />
+          </div>
         </div>
 
-        <p class="reveal mt-4 font-mono text-xs text-muted">
-          <span id="version-label">v1.0.0</span> · 27 MB installer · no account
-          to create
-        </p>
+        <!-- Four numbers, because the questions a visitor actually arrives
+             with are how big, who else is involved, how long and how much. -->
+        <div class="mx-auto max-w-6xl px-5 pb-16 md:pb-20">
+          <dl
+            class="card reveal grid grid-cols-2 divide-line text-center sm:grid-cols-4 sm:divide-x"
+          >
+            <div class="border-b border-line px-4 py-5 sm:border-b-0">
+              <dt class="text-xs tracking-wide text-muted">Largest single file</dt>
+              <dd class="display mt-1.5 text-2xl">2 GB</dd>
+            </div>
+            <div class="border-b border-l border-line px-4 py-5 sm:border-b-0 sm:border-l-0">
+              <dt class="text-xs tracking-wide text-muted">Servers in between</dt>
+              <dd class="display mt-1.5 text-2xl">None</dd>
+            </div>
+            <div class="px-4 py-5">
+              <dt class="text-xs tracking-wide text-muted">One-time setup</dt>
+              <dd class="display mt-1.5 text-2xl">5 min</dd>
+            </div>
+            <div class="border-l border-line px-4 py-5 sm:border-l-0">
+              <dt class="text-xs tracking-wide text-muted">Cost, forever</dt>
+              <dd class="display mt-1.5 text-2xl">Free</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ===================== how it works, plainly ===================== -->
+      <section id="how" class="border-t border-line/60 bg-panel/30">
+        <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div class="reveal">
+            <p class="eyebrow eyebrow-tick">In plain English</p>
+            <h2 class="display h2 mt-5">Three things, then you can forget about it</h2>
+            <p class="mt-5 max-w-2xl leading-relaxed text-muted">
+              There is nothing to schedule and no button to remember to press.
+              You set it up once and it runs in the background, showing a small
+              icon in your system tray.
+            </p>
+          </div>
+
+          <ol class="mt-12 grid gap-4 md:grid-cols-3">
+            <li class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.2l2 2.2h7.8A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-10Z" />
+                </svg>
+              </span>
+              <p class="mt-5 font-mono text-xs text-cyan">Step 1</p>
+              <h3 class="h3 mt-1.5 font-semibold">Pick your folders</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Point Driftgram at the folders that matter — documents, photos, a
+                project directory. Anything you would hate to lose.
+              </p>
+            </li>
+
+            <li class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M2 12s3.6-6.2 10-6.2S22 12 22 12s-3.6 6.2-10 6.2S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="2.8" />
+                </svg>
+              </span>
+              <p class="mt-5 font-mono text-xs text-cyan">Step 2</p>
+              <h3 class="h3 mt-1.5 font-semibold">It watches them for you</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Save, edit or drop in a file and Driftgram sends it to your
+                Telegram within seconds. Only what changed goes up.
+              </p>
+            </li>
+
+            <li class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="6.5" y="2.5" width="11" height="19" rx="3" />
+                  <path d="M10.5 18.4h3" />
+                </svg>
+              </span>
+              <p class="mt-5 font-mono text-xs text-cyan">Step 3</p>
+              <h3 class="h3 mt-1.5 font-semibold">Reach them anywhere</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                They are ordinary Telegram messages, open on any device you are
+                signed in on. Deleted something? Restore it from the app.
+              </p>
+            </li>
+          </ol>
+        </div>
       </section>
 
       <!-- ===================== the signature: the loop ===================== -->
-      <section id="how" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+      <section id="engine" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div class="reveal">
-          <p class="eyebrow">The part that's hard</p>
-          <h2 class="display mt-4 max-w-2xl text-3xl sm:text-4xl">
-            A two-way sync that doesn't feed itself
-          </h2>
+          <p class="eyebrow eyebrow-tick">Under the hood</p>
+          <h2 class="display h2 mt-5">A two-way sync that doesn&rsquo;t feed itself</h2>
           <p class="mt-5 max-w-2xl leading-relaxed text-muted">
             Upload a file and Telegram hands it straight back as a new message.
             Naive tools download that, touch the local file, notice the change
@@ -141,8 +344,9 @@
              in sync. It does need a floor: scaled below about 600px the labels
              drop under 7px and stop being readable, so narrow screens get a
              horizontal swipe instead of an unreadable diagram. -->
-        <figure class="card reveal mt-10 overflow-hidden">
-          <div class="overflow-x-auto">
+        <figure id="loop-figure" class="card reveal mt-10 overflow-hidden">
+          <div class="swipe" data-swipe>
+            <div class="overflow-x-auto" data-swipe-scroller>
             <svg
               id="loop-svg"
               viewBox="0 0 800 220"
@@ -150,70 +354,124 @@
               role="img"
               aria-labelledby="loop-title loop-desc"
             >
-            <title id="loop-title">How Driftgram decides whether to move a file</title>
-            <desc id="loop-desc">
-              A folder on your computer on the left, Telegram on the right, and
-              the manifest between them. Files pass the manifest only when
-              their content differs from what it last recorded, which is what
-              stops an upload from being downloaded back again in a loop.
-            </desc>
+              <title id="loop-title">How Driftgram decides whether to move a file</title>
+              <desc id="loop-desc">
+                A folder on your computer on the left, Telegram on the right, and
+                the manifest between them. Files pass the manifest only when
+                their content differs from what it last recorded, which is what
+                stops an upload from being downloaded back again in a loop.
+              </desc>
 
-            <!-- wire -->
-            <line
-              x1="196" y1="110" x2="604" y2="110"
-              stroke="#313943" stroke-width="2" stroke-dasharray="5 6"
-            />
+              <!-- wire -->
+              <line
+                x1="196" y1="110" x2="604" y2="110"
+                stroke="#313943" stroke-width="2" stroke-dasharray="5 6"
+              />
 
-            <!-- left node: the folder -->
-            <g>
-              <rect x="24" y="62" width="172" height="96" rx="12"
-                    fill="#1C2026" stroke="#313943" />
-              <text x="110" y="94" text-anchor="middle" fill="#E9EEF4"
-                    font-family="Archivo, sans-serif" font-size="15" font-weight="600">Your folder</text>
-              <text x="110" y="118" text-anchor="middle" fill="#9AA7B6"
-                    font-family="JetBrains Mono, monospace" font-size="11">D:\Documents</text>
-              <circle id="node-local-dot" cx="110" cy="139" r="4" fill="#3DBE6C" />
-            </g>
+              <!-- left node: the folder -->
+              <g>
+                <rect x="24" y="62" width="172" height="96" rx="12"
+                      fill="#1C2026" stroke="#313943" />
+                <text x="110" y="94" text-anchor="middle" fill="#E9EEF4"
+                      font-family="Archivo, sans-serif" font-size="15" font-weight="600">Your folder</text>
+                <text x="110" y="118" text-anchor="middle" fill="#9AA7B6"
+                      font-family="JetBrains Mono, monospace" font-size="11">D:\Documents</text>
+                <circle id="node-local-dot" cx="110" cy="139" r="4" fill="#4ED084" />
+              </g>
 
-            <!-- the gate: the manifest -->
-            <g>
-              <rect id="gate-box" x="330" y="56" width="140" height="108" rx="12"
-                    fill="#242A31" stroke="#38B6F1" stroke-width="1.5" />
-              <text x="400" y="84" text-anchor="middle" fill="#E9EEF4"
-                    font-family="Archivo, sans-serif" font-size="14" font-weight="600">manifest</text>
-              <text x="400" y="104" text-anchor="middle" fill="#9AA7B6"
-                    font-family="JetBrains Mono, monospace" font-size="10">size · mtime · sha256</text>
-              <text id="gate-verdict" x="400" y="134" text-anchor="middle" fill="#3DBE6C"
-                    font-family="JetBrains Mono, monospace" font-size="11">idle</text>
-            </g>
+              <!-- the gate: the manifest -->
+              <g>
+                <!-- 192 wide, not 140. The longest verdict this box ever
+                     holds, "not on record · download", measures 158.4 at
+                     font-size 11; at 140 it hung 9px out of both sides. The
+                     box grows rather than the text shrinking, because the
+                     labels in here are already at the 7px floor once the
+                     600px-wide diagram is scaled down on a phone. -->
+                <rect id="gate-box" x="304" y="56" width="192" height="108" rx="12"
+                      fill="#242A31" stroke="#38B6F1" stroke-width="1.5" />
+                <text x="400" y="84" text-anchor="middle" fill="#E9EEF4"
+                      font-family="Archivo, sans-serif" font-size="14" font-weight="600">manifest</text>
+                <text x="400" y="104" text-anchor="middle" fill="#9AA7B6"
+                      font-family="JetBrains Mono, monospace" font-size="10">size · mtime · sha256</text>
+                <text id="gate-verdict" x="400" y="134" text-anchor="middle" fill="#4ED084"
+                      font-family="JetBrains Mono, monospace" font-size="11">idle</text>
+              </g>
 
-            <!-- right node: Telegram -->
-            <g>
-              <rect x="604" y="62" width="172" height="96" rx="12"
-                    fill="#1C2026" stroke="#313943" />
-              <text x="690" y="94" text-anchor="middle" fill="#E9EEF4"
-                    font-family="Archivo, sans-serif" font-size="15" font-weight="600">Telegram</text>
-              <text x="690" y="118" text-anchor="middle" fill="#9AA7B6"
-                    font-family="JetBrains Mono, monospace" font-size="11">Saved Messages</text>
-              <circle id="node-remote-dot" cx="690" cy="139" r="4" fill="#3DBE6C" />
-            </g>
+              <!-- right node: Telegram -->
+              <g>
+                <rect x="604" y="62" width="172" height="96" rx="12"
+                      fill="#1C2026" stroke="#313943" />
+                <text x="690" y="94" text-anchor="middle" fill="#E9EEF4"
+                      font-family="Archivo, sans-serif" font-size="15" font-weight="600">Telegram</text>
+                <text x="690" y="118" text-anchor="middle" fill="#9AA7B6"
+                      font-family="JetBrains Mono, monospace" font-size="11">Saved Messages</text>
+                <circle id="node-remote-dot" cx="690" cy="139" r="4" fill="#4ED084" />
+              </g>
 
-            <!-- the travelling file -->
-            <g id="packet" opacity="0">
-              <rect x="-30" y="-13" width="60" height="26" rx="6" fill="#38B6F1" />
-              <text id="packet-label" x="0" y="4" text-anchor="middle" fill="#06111A"
-                    font-family="JetBrains Mono, monospace" font-size="10" font-weight="500">file</text>
-            </g>
-            </svg>
+              <!-- the travelling file -->
+              <!-- 74 wide, not 60: "invoice.pdf" at 10px mono is 66, and a
+                   label hanging out of both ends of its own chip looks like a
+                   rendering bug rather than a design. -->
+              <g id="packet" opacity="0">
+                <rect id="packet-box" x="-37" y="-13" width="74" height="26" rx="6" fill="#38B6F1" />
+                <text id="packet-label" x="0" y="4" text-anchor="middle" fill="#06111A"
+                      font-family="JetBrains Mono, monospace" font-size="10" font-weight="500">file</text>
+              </g>
+              </svg>
+            </div>
           </div>
 
-          <figcaption
-            class="flex min-h-[4.5rem] flex-col gap-1 border-t border-line px-5 py-4 sm:px-7"
-          >
-            <span id="loop-step" class="font-mono text-xs text-cyan">step 1 of 4</span>
-            <span id="loop-caption" class="text-sm leading-relaxed text-muted"
-              >You save a file in a watched folder.</span
+          <!-- The diagram animates on its own, so it owes the reader a way to
+               stop it and step through at their own pace. The dots are real
+               buttons, not decoration - keyboard included. -->
+          <figcaption class="border-t border-line px-5 py-4 sm:px-7">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <button
+                id="loop-toggle"
+                type="button"
+                aria-label="Pause the diagram"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-muted transition-colors hover:border-muted hover:text-body"
+              >
+                <svg
+                  id="loop-icon-pause"
+                  width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                >
+                  <rect x="7" y="5" width="3.6" height="14" rx="1.2" />
+                  <rect x="13.4" y="5" width="3.6" height="14" rx="1.2" />
+                </svg>
+                <svg
+                  id="loop-icon-play"
+                  width="15" height="15" viewBox="0 0 24 24" fill="currentColor"
+                  class="hidden" aria-hidden="true"
+                >
+                  <path d="M8 5.5a1 1 0 0 1 1.54-.84l8 6.5a1 1 0 0 1 0 1.68l-8 6.5A1 1 0 0 1 8 18.5v-13Z" />
+                </svg>
+                <span id="loop-toggle-label" class="sr-only">Pause the diagram</span>
+              </button>
+
+              <div id="loop-dots" class="flex items-center gap-1.5" role="group" aria-label="Diagram steps"></div>
+
+              <span id="loop-step" class="font-mono text-xs text-cyan">step 1 of 4</span>
+
+              <!-- Below about 600px the diagram is wider than the screen.
+                   js/main.js removes this once it isn't. -->
+              <span
+                data-swipe-note
+                class="font-mono text-xs text-muted md:hidden"
+                >swipe the diagram →</span
+              >
+            </div>
+
+            <!-- aria-live so a screen reader hears each beat as it changes,
+                 rather than only the caption that happened to be there first. -->
+            <p
+              id="loop-caption"
+              aria-live="polite"
+              class="mt-3 min-h-[2.75rem] text-sm leading-relaxed text-muted"
             >
+              You save a file in a watched folder. It isn&rsquo;t in the manifest,
+              so it goes up.
+            </p>
           </figcaption>
         </figure>
 
@@ -224,60 +482,124 @@
       </section>
 
       <!-- ===================== features ===================== -->
-      <section class="mx-auto max-w-6xl px-5 py-16 md:py-20">
-        <div class="reveal">
-          <p class="eyebrow">What you get</p>
-          <div class="rule-gradient mt-4"></div>
-        </div>
-
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">Files come back intact</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              Everything is uploaded as a document, so Telegram never
-              recompresses it. A photo returns exactly as it went up.
-            </p>
+      <section id="features" class="border-y border-line/60 bg-panel/30">
+        <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div class="reveal">
+            <p class="eyebrow eyebrow-tick">What you get</p>
+            <h2 class="display h2 mt-5">Details that decide whether you keep using it</h2>
           </div>
 
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">No 50 MB ceiling</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              Driftgram signs in as you rather than as a bot, so the limit is
-              Telegram's own — about 2 GB a file, or 4 GB with Premium.
-            </p>
-          </div>
+          <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 2.8 20 5.7v6.1c0 4.8-3.3 8.1-8 9.4-4.7-1.3-8-4.6-8-9.4V5.7l8-2.9Z" />
+                  <path d="m8.8 11.9 2.2 2.2 4.2-4.4" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">Files come back intact</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Everything is uploaded as a document, so Telegram never
+                recompresses it. A photo returns exactly as it went up.
+              </p>
+            </div>
 
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">Conflicts keep both copies</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              Edit offline while a newer copy arrives from your phone and yours
-              stays put; Telegram's is saved beside it as
-              <span class="font-mono text-[0.8rem] text-body">name (from Telegram).ext</span>.
-            </p>
-          </div>
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M13.8 2.8H7a2.4 2.4 0 0 0-2.4 2.4v13.6A2.4 2.4 0 0 0 7 21.2h10a2.4 2.4 0 0 0 2.4-2.4V8.4l-5.6-5.6Z" />
+                  <path d="M13.8 2.8v5.6h5.6" />
+                  <path d="M12 18v-6.2" />
+                  <path d="m9.6 14.2 2.4-2.4 2.4 2.4" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">No 50 MB ceiling</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Driftgram signs in as you rather than as a bot, so the limit is
+                Telegram&rsquo;s own — about 2 GB a file, or 4 GB with Premium.
+              </p>
+            </div>
 
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">Restore what you deleted</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              Telegram still holds it. Browse everything ever backed up, tick
-              what you want, and bring it back.
-            </p>
-          </div>
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="8.8" y="8.8" width="12.4" height="12.4" rx="2.4" />
+                  <path d="M15.8 8.8V5.2a2.4 2.4 0 0 0-2.4-2.4H5.2a2.4 2.4 0 0 0-2.4 2.4v8.2a2.4 2.4 0 0 0 2.4 2.4h3.6" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">Conflicts keep both copies</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Edit offline while a newer copy arrives from your phone and yours
+                stays put; Telegram&rsquo;s is saved beside it as
+                <span class="font-mono text-[0.8rem] text-body">name (from Telegram).ext</span>.
+              </p>
+            </div>
 
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">Skip what isn't worth it</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              gitignore-style rules per folder and globally, with presets for
-              build output, videos, disc images and logs.
-            </p>
-          </div>
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3.2 12a8.8 8.8 0 1 0 2.9-6.5" />
+                  <path d="M3.2 4v4.6h4.6" />
+                  <path d="M12 7.8V12l2.9 1.9" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">Restore what you deleted</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Telegram still holds it. Browse everything ever backed up, tick
+                what you want, and bring it back.
+              </p>
+            </div>
 
-          <div class="card reveal p-6">
-            <h3 class="font-semibold">Nothing phones home</h3>
-            <p class="mt-2.5 text-sm leading-relaxed text-muted">
-              Driftgram talks to Telegram and nothing else. No telemetry, no
-              update check, no server belonging to anyone else.
-            </p>
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3.4 5.2h17.2l-6.8 8v6.2l-3.6 1.8v-8l-6.8-8Z" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">Skip what isn&rsquo;t worth it</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                gitignore-style rules per folder and globally, with presets for
+                build output, videos, disc images and logs.
+              </p>
+            </div>
+
+            <div class="card reveal p-7">
+              <span class="icon-tile" aria-hidden="true">
+                <svg
+                  width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="4" y="10.2" width="16" height="10.6" rx="2.4" />
+                  <path d="M8 10.2V7a4 4 0 0 1 8 0v3.2" />
+                </svg>
+              </span>
+              <h3 class="mt-5 font-semibold">Nothing phones home</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-muted">
+                Driftgram talks to Telegram and nothing else. No telemetry, no
+                update check, no server belonging to anyone else.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -285,287 +607,853 @@
       <!-- ===================== screenshots ===================== -->
       <section id="screens" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div class="reveal">
-          <p class="eyebrow">The app</p>
-          <h2 class="display mt-4 text-3xl sm:text-4xl">Five screens, no terminal</h2>
-          <p class="mt-5 max-w-xl leading-relaxed text-muted">
-            Built for people who have never opened one. There's a command-line
-            version too, for those who have.
+          <p class="eyebrow eyebrow-tick">The app</p>
+          <h2 class="display h2 mt-5">Six screens, no terminal</h2>
+          <p class="mt-5 max-w-2xl leading-relaxed text-muted">
+            Built for people who have never opened one. There&rsquo;s a
+            command-line version too, for those who have. Shown here in dark
+            mode — Driftgram follows whatever your system is set to.
           </p>
         </div>
 
-        <div class="reveal mt-9">
-          <div
-            id="shot-tabs"
-            role="tablist"
-            aria-label="App screens"
-            class="flex flex-wrap gap-2"
-          >
+        <div class="reveal mt-10">
+          <!-- flex-wrap, so the labels stay whole at every width instead of
+               being clipped into one scrolling row. -->
+          <div id="shot-tabs" role="tablist" aria-label="App screens" class="flex flex-wrap gap-2">
             <button
-              role="tab"
-              aria-selected="true"
-              aria-controls="shot-panel"
-              data-src="assets/status.png"
-              data-alt="The Status page: everything backed up, 1,284 files, 6.9 GB across 3 watched folders, with recent activity below"
-              class="tab-active rounded-lg border border-line px-3.5 py-2 text-sm transition-colors"
+              role="tab" id="tab-status" aria-selected="true" aria-controls="shot-panel"
+              data-src="assets/app-status.png"
+              data-alt="The Status screen: Everything is backed up, with counters reading 1,284 files backed up, 6.9 GB total size and 3 folders watched, above a list of recent activity."
+              class="tab"
             >
               Status
             </button>
             <button
-              role="tab"
-              aria-selected="false"
-              aria-controls="shot-panel"
-              data-src="assets/folders-dark.png"
-              data-alt="The Folders page in dark mode, listing three watched folders with their Telegram tags and skip-rule counts"
-              class="rounded-lg border border-line px-3.5 py-2 text-sm text-muted transition-colors hover:text-body"
+              role="tab" id="tab-folders" aria-selected="false" aria-controls="shot-panel" tabindex="-1"
+              data-src="assets/app-folders.png"
+              data-alt="The Folders screen, listing three watched folders with the tag each one uses in Telegram and how many skip rules it has."
+              class="tab"
             >
               Folders
             </button>
             <button
-              role="tab"
-              aria-selected="false"
-              aria-controls="shot-panel"
-              data-src="assets/activity.png"
-              data-alt="The Activity page, with backed-up files in plain text, a missing folder in red, and a kept-both conflict in amber"
-              class="rounded-lg border border-line px-3.5 py-2 text-sm text-muted transition-colors hover:text-body"
+              role="tab" id="tab-activity" aria-selected="false" aria-controls="shot-panel" tabindex="-1"
+              data-src="assets/app-activity.png"
+              data-alt="The Activity screen, with backed-up files in plain text, a missing folder in red, and a kept-both conflict and a skipped oversized file in amber."
+              class="tab"
             >
               Activity
             </button>
             <button
-              role="tab"
-              aria-selected="false"
-              aria-controls="shot-panel"
-              data-src="assets/restore.png"
-              data-alt="The Restore page listing five files held in Telegram, three marked Missing, with a Restore 3 files button"
-              class="rounded-lg border border-line px-3.5 py-2 text-sm text-muted transition-colors hover:text-body"
+              role="tab" id="tab-restore" aria-selected="false" aria-controls="shot-panel" tabindex="-1"
+              data-src="assets/app-restore.png"
+              data-alt="The Restore screen listing five files held in Telegram, three of them marked Missing and ticked, with a Restore 3 files button."
+              class="tab"
             >
               Restore
             </button>
             <button
-              role="tab"
-              aria-selected="false"
-              aria-controls="shot-panel"
-              data-src="assets/wizard-credentials.png"
-              data-alt="The setup wizard's Connect to Telegram step, with a button that opens my.telegram.org and two fields for the credentials"
-              class="rounded-lg border border-line px-3.5 py-2 text-sm text-muted transition-colors hover:text-body"
+              role="tab" id="tab-settings" aria-selected="false" aria-controls="shot-panel" tabindex="-1"
+              data-src="assets/app-settings.png"
+              data-alt="The Settings screen, with options for starting at login, mirroring deletions and what to do when the same file changes in two places."
+              class="tab"
+            >
+              Settings
+            </button>
+            <button
+              role="tab" id="tab-wizard" aria-selected="false" aria-controls="shot-panel" tabindex="-1"
+              data-src="assets/app-wizard.png"
+              data-alt="The setup wizard's Connect to Telegram step, with a button that opens my.telegram.org and two fields for the credentials it gives you."
+              class="tab"
             >
               Setup wizard
             </button>
           </div>
 
           <div
-            id="shot-panel"
-            role="tabpanel"
-            class="card mt-4 overflow-hidden bg-panel p-2 sm:p-3"
+            id="shot-panel" role="tabpanel" tabindex="0" aria-labelledby="tab-status"
+            class="win mt-4"
           >
+            <div class="win-bar">
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="win-dot" aria-hidden="true"></span>
+              <span class="ml-2 font-mono text-[0.7rem] text-muted">Driftgram</span>
+            </div>
             <img
               id="shot-img"
-              src="assets/status.png"
-              alt="The Status page: everything backed up, 1,284 files, 6.9 GB across 3 watched folders, with recent activity below"
+              src="assets/app-status.png"
+              alt="The Status screen: Everything is backed up, with counters reading 1,284 files backed up, 6.9 GB total size and 3 folders watched, above a list of recent activity."
               width="940"
               height="680"
-              class="w-full rounded-lg"
+              class="win-shot"
+              loading="lazy"
             />
           </div>
         </div>
       </section>
 
       <!-- ===================== setup ===================== -->
-      <section id="setup" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+      <section id="setup" class="border-y border-line/60 bg-panel/30">
+        <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div class="reveal">
+            <p class="eyebrow eyebrow-tick">Setup</p>
+            <h2 class="display h2 mt-5">Four steps, about five minutes</h2>
+            <p class="mt-5 max-w-2xl leading-relaxed text-muted">
+              The wizard runs in this order the first time you open the app, and
+              you never do it again.
+            </p>
+          </div>
+
+          <!-- Numbered because this genuinely is a sequence. Nothing else on
+               the page is numbered except the three-step summary above. -->
+          <ol class="mt-12 space-y-3">
+            <li class="card reveal flex flex-col gap-4 p-7 sm:flex-row sm:gap-6">
+              <span class="display shrink-0 text-2xl text-cyan">01</span>
+              <div>
+                <h3 class="font-semibold">Connect to Telegram</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+                  Telegram asks every app that talks to it to be registered,
+                  including this one, on your account. It&rsquo;s free and takes a
+                  minute — Driftgram opens the page and you copy two values back.
+                  The alternative is one shared key for everybody, where a single
+                  ban breaks every user at once. Yours can&rsquo;t be taken away by
+                  someone else&rsquo;s misuse.
+                </p>
+              </div>
+            </li>
+            <li class="card reveal flex flex-col gap-4 p-7 sm:flex-row sm:gap-6">
+              <span class="display shrink-0 text-2xl text-cyan">02</span>
+              <div>
+                <h3 class="font-semibold">Sign in</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+                  Your phone number, the code Telegram sends, and your two-step
+                  password if you have one.
+                </p>
+              </div>
+            </li>
+            <li class="card reveal flex flex-col gap-4 p-7 sm:flex-row sm:gap-6">
+              <span class="display shrink-0 text-2xl text-cyan">03</span>
+              <div>
+                <h3 class="font-semibold">Choose folders</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+                  Pick what to back up, and tick any presets for things not worth
+                  uploading.
+                </p>
+              </div>
+            </li>
+            <li class="card reveal flex flex-col gap-4 p-7 sm:flex-row sm:gap-6">
+              <span class="display shrink-0 text-2xl text-cyan">04</span>
+              <div>
+                <h3 class="font-semibold">Preferences</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+                  Start at login, whether deletions should mirror, and what to do
+                  when the same file changes in two places. Then it runs.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================== comparison ===================== -->
+      <section class="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div class="reveal">
-          <p class="eyebrow">Setup</p>
-          <h2 class="display mt-4 text-3xl sm:text-4xl">Four steps, about five minutes</h2>
+          <p class="eyebrow eyebrow-tick">Where your files actually live</p>
+          <h2 class="display h2 mt-5">Next to a cloud drive</h2>
+          <p class="mt-5 max-w-2xl leading-relaxed text-muted">
+            Driftgram isn&rsquo;t trying to replace Dropbox or Google Drive. It
+            trades their polish and their collaboration features for a different
+            arrangement of trust and cost.
+          </p>
         </div>
 
-        <!-- Numbered because this genuinely is a sequence - the wizard runs in
-             this order. Nothing else on the page is numbered. -->
-        <ol class="mt-10 space-y-4">
-          <li class="card reveal flex gap-5 p-6">
-            <span class="display shrink-0 text-2xl text-cyan">1</span>
-            <div>
-              <h3 class="font-semibold">Connect to Telegram</h3>
-              <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Telegram asks every app that talks to it to be registered,
-                including this one, on your account. It's free and takes a
-                minute — Driftgram opens the page and you copy two values back.
-                The alternative is one shared key for everybody, where a single
-                ban breaks every user at once. Yours can't be taken away by
-                someone else's misuse.
-              </p>
+        <div class="reveal mt-10">
+          <div class="card swipe overflow-hidden" data-swipe>
+            <div class="overflow-x-auto" data-swipe-scroller>
+          <table class="w-full min-w-[34rem] text-left text-sm">
+            <caption class="sr-only">
+              Driftgram compared with a typical consumer cloud drive
+            </caption>
+            <thead>
+              <tr class="border-b border-line">
+                <th scope="col" class="px-5 py-4 font-medium text-muted sm:px-7">&nbsp;</th>
+                <th scope="col" class="px-5 py-4 font-semibold text-cyan sm:px-7">Driftgram</th>
+                <th scope="col" class="px-5 py-4 font-medium text-muted sm:px-7">
+                  A typical cloud drive
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-line/60">
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">Files are stored</th>
+                <td class="px-5 py-4 sm:px-7">In your own Telegram account</td>
+                <td class="px-5 py-4 text-muted sm:px-7">On the provider&rsquo;s servers</td>
+              </tr>
+              <tr class="border-b border-line/60">
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">In the middle</th>
+                <td class="px-5 py-4 sm:px-7">Nobody — your PC talks to Telegram</td>
+                <td class="px-5 py-4 text-muted sm:px-7">The provider</td>
+              </tr>
+              <tr class="border-b border-line/60">
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">Monthly cost</th>
+                <td class="px-5 py-4 sm:px-7">None</td>
+                <td class="px-5 py-4 text-muted sm:px-7">A plan, once you outgrow the free tier</td>
+              </tr>
+              <tr class="border-b border-line/60">
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">Largest single file</th>
+                <td class="px-5 py-4 sm:px-7">~2 GB, or 4 GB with Telegram Premium</td>
+                <td class="px-5 py-4 text-muted sm:px-7">Depends on the plan</td>
+              </tr>
+              <tr class="border-b border-line/60">
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">Source code</th>
+                <td class="px-5 py-4 sm:px-7">Public, MIT licensed</td>
+                <td class="px-5 py-4 text-muted sm:px-7">Closed</td>
+              </tr>
+              <tr>
+                <th scope="row" class="px-5 py-4 font-normal text-muted sm:px-7">Sharing and collaboration</th>
+                <td class="px-5 py-4 text-muted sm:px-7">Not a feature — this is a backup tool</td>
+                <td class="px-5 py-4 sm:px-7">Their strong suit</td>
+              </tr>
+            </tbody>
+          </table>
             </div>
-          </li>
-          <li class="card reveal flex gap-5 p-6">
-            <span class="display shrink-0 text-2xl text-cyan">2</span>
-            <div>
-              <h3 class="font-semibold">Sign in</h3>
-              <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Your phone number, the code Telegram sends, and your two-step
-                password if you have one.
-              </p>
-            </div>
-          </li>
-          <li class="card reveal flex gap-5 p-6">
-            <span class="display shrink-0 text-2xl text-cyan">3</span>
-            <div>
-              <h3 class="font-semibold">Choose folders</h3>
-              <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Pick what to back up, and tick any presets for things not worth
-                uploading.
-              </p>
-            </div>
-          </li>
-          <li class="card reveal flex gap-5 p-6">
-            <span class="display shrink-0 text-2xl text-cyan">4</span>
-            <div>
-              <h3 class="font-semibold">Preferences</h3>
-              <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Start at login, whether deletions should mirror, and what to do
-                when the same file changes in two places. Then it runs.
-              </p>
-            </div>
-          </li>
-        </ol>
+          </div>
+          <p data-swipe-note class="mt-3 font-mono text-xs text-muted md:hidden">
+            swipe the table →
+          </p>
+        </div>
       </section>
 
       <!-- ===================== limits ===================== -->
       <section id="limits" class="border-y border-line bg-panel/40">
         <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
           <div class="reveal">
-            <p class="eyebrow" style="color: var(--color-attention)">Before you rely on it</p>
-            <h2 class="display mt-4 text-3xl sm:text-4xl">What it won't do</h2>
+            <p
+              class="eyebrow eyebrow-tick"
+              style="
+                color: var(--color-attention);
+                --tick-from: var(--color-attention);
+                --tick-to: var(--color-attention);
+              "
+            >
+              Before you rely on it
+            </p>
+            <h2 class="display h2 mt-5">What it won&rsquo;t do</h2>
             <p class="mt-5 max-w-2xl leading-relaxed text-muted">
               A backup tool is worth nothing if you find out its limits after
-              you've trusted it. So, plainly:
+              you&rsquo;ve trusted it. So, plainly:
             </p>
           </div>
 
-          <div class="mt-10 grid gap-4 md:grid-cols-2">
-            <div class="reveal border-l-2 pl-5" style="border-color: var(--color-attention)">
-              <h3 class="font-semibold">Deletions only mirror while it's running</h3>
+          <div class="mt-12 grid gap-4 md:grid-cols-2">
+            <div class="card reveal border-l-2 p-6" style="border-left-color: var(--color-attention)">
+              <h3 class="font-semibold">Deletions only mirror while it&rsquo;s running</h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">
-                Telegram keeps no record of a deleted message, so a deletion
-                that happened while Driftgram was closed can never be detected
+                Telegram keeps no record of a deleted message, so a deletion that
+                happened while Driftgram was closed can never be detected
                 afterwards. This is an API limitation, not a missing feature.
               </p>
             </div>
-            <div class="reveal border-l-2 pl-5" style="border-color: var(--color-attention)">
-              <h3 class="font-semibold">Folders can't nest</h3>
+            <div class="card reveal border-l-2 p-6" style="border-left-color: var(--color-attention)">
+              <h3 class="font-semibold">Folders can&rsquo;t nest</h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">
-                A file would belong to two of them, so Driftgram refuses a
-                folder sitting inside — or containing — one you already sync.
+                A file would belong to two of them, so Driftgram refuses a folder
+                sitting inside — or containing — one you already sync.
               </p>
             </div>
-            <div class="reveal border-l-2 pl-5" style="border-color: var(--color-attention)">
-              <h3 class="font-semibold">Some Linux filenames can't reach Windows</h3>
+            <div class="card reveal border-l-2 p-6" style="border-left-color: var(--color-attention)">
+              <h3 class="font-semibold">Some Linux filenames can&rsquo;t reach Windows</h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">
                 <span class="font-mono text-[0.8rem]">notes:2024.txt</span> is
                 legal on Linux and impossible on Windows. Those are skipped and
                 named in the log, rather than renamed behind your back.
               </p>
             </div>
-            <div class="reveal border-l-2 pl-5" style="border-color: var(--color-attention)">
-              <h3 class="font-semibold">The Windows installer isn't signed</h3>
+            <div class="card reveal border-l-2 p-6" style="border-left-color: var(--color-attention)">
+              <h3 class="font-semibold">The Windows installer isn&rsquo;t signed</h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">
-                SmartScreen will warn you once. A certificate costs a few
-                hundred dollars a year. Choose
-                <span class="text-body">More info → Run anyway</span> if you're
-                happy to.
+                SmartScreen will warn you once. A certificate costs a few hundred
+                dollars a year. Choose
+                <span class="text-body">More info → Run anyway</span> if
+                you&rsquo;re happy to.
               </p>
             </div>
           </div>
 
-          <p class="reveal mt-8 text-sm text-muted">
+          <p class="reveal mt-8 text-sm leading-relaxed text-muted">
             Your session file is equivalent to being logged into your Telegram
             account — never share it.
             <a
               href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/SECURITY.md"
-              class="text-cyan underline decoration-cyan/40 underline-offset-2 hover:decoration-cyan"
+              class="text-cyan underline decoration-cyan/40 underline-offset-2 transition-colors hover:decoration-cyan"
               >Security policy</a
             >.
           </p>
         </div>
       </section>
 
-      <!-- ===================== download ===================== -->
-      <section id="download" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+      <!-- ===================== faq ===================== -->
+      <section id="faq" class="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div class="reveal">
-          <p class="eyebrow">Download</p>
-          <h2 class="display mt-4 text-3xl sm:text-4xl">Version 1.0.0</h2>
-          <p class="mt-5 max-w-xl leading-relaxed text-muted">
-            Built and packaged by CI on Windows and Ubuntu 22.04. The Windows
-            installer is per-user, so there's no administrator prompt.
-          </p>
+          <p class="eyebrow eyebrow-tick">Questions</p>
+          <h2 class="display h2 mt-5">The ones people ask first</h2>
         </div>
 
-        <div class="mt-10 grid gap-4 md:grid-cols-3">
-          <a
-            href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-Setup.exe"
-            class="card reveal group flex flex-col p-6 transition-colors hover:border-cyan/60"
-          >
-            <span class="font-mono text-xs text-muted">Windows 10 / 11</span>
-            <span class="display mt-2 text-xl">Installer</span>
-            <span class="mt-1 font-mono text-xs text-muted">.exe · 27 MB</span>
-            <span class="mt-5 text-sm text-cyan">Download →</span>
-          </a>
+        <!-- Native <details>, so every answer is reachable with JS off and the
+             browser handles the keyboard behaviour. -->
+        <div class="mt-10 max-w-3xl space-y-3">
+          <details class="faq card reveal">
+            <summary>
+              Do I need Telegram Premium?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              No. A free Telegram account works. Premium only raises the ceiling
+              on a single file from about 2 GB to 4 GB.
+            </p>
+          </details>
 
-          <a
-            href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-x86_64.AppImage"
-            class="card reveal group flex flex-col p-6 transition-colors hover:border-cyan/60"
-          >
-            <span class="font-mono text-xs text-muted">Any Linux</span>
-            <span class="display mt-2 text-xl">AppImage</span>
-            <span class="mt-1 font-mono text-xs text-muted">chmod +x · 69 MB</span>
-            <span class="mt-5 text-sm text-cyan">Download →</span>
-          </a>
+          <details class="faq card reveal">
+            <summary>
+              Where do my files actually go?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              Into a Telegram chat you pick — Saved Messages by default, which is
+              the private chat with yourself. They arrive as ordinary file
+              attachments, so you can open them from Telegram on any device
+              without Driftgram installed.
+            </p>
+          </details>
 
-          <a
-            href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/driftgram_1.0.0_amd64.deb"
-            class="card reveal group flex flex-col p-6 transition-colors hover:border-cyan/60"
-          >
-            <span class="font-mono text-xs text-muted">Debian / Ubuntu / Mint</span>
-            <span class="display mt-2 text-xl">Package</span>
-            <span class="mt-1 font-mono text-xs text-muted">.deb · 59 MB</span>
-            <span class="mt-5 text-sm text-cyan">Download →</span>
-          </a>
+          <details class="faq card reveal">
+            <summary>
+              Can you see my files?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              No. There is no Driftgram server and no account to create. The app
+              runs on your computer and connects to Telegram with your own
+              credentials — the same trust you already place in Telegram, and
+              nobody new. The whole source is public under the MIT licence if
+              you&rsquo;d rather check than take our word for it.
+            </p>
+          </details>
+
+          <details class="faq card reveal">
+            <summary>
+              Why do I have to register an app with Telegram?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              Telegram asks every program that connects to it to be registered on
+              an account. It&rsquo;s free, takes a minute, and you only do it
+              once — the wizard opens the page and you paste two values back. The
+              alternative would be one key shared by every user, where a single
+              ban breaks everybody at once.
+            </p>
+          </details>
+
+          <details class="faq card reveal">
+            <summary>
+              Will it upload everything on my computer?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              Only the folders you choose, and within those only the files that
+              changed. Skip rules keep build output, videos, disc images and logs
+              out of the way — tick the presets during setup, or write your own
+              in gitignore syntax.
+            </p>
+          </details>
+
+          <details class="faq card reveal">
+            <summary>
+              What if I edit the same file in two places?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              You decide up front: keep yours, take Telegram&rsquo;s, or keep
+              both. Keeping both is the default, because it is the only one that
+              can&rsquo;t lose work — the incoming copy is written beside yours as
+              <span class="font-mono text-[0.8rem] text-body">name (from Telegram).ext</span>.
+            </p>
+          </details>
+
+          <details class="faq card reveal">
+            <summary>
+              Is there a macOS build?
+              <svg
+                class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="px-[1.375rem] pb-5 text-sm leading-relaxed text-muted">
+              Not a packaged one. The desktop app is built and tested for Windows
+              and Linux. The command-line version runs anywhere Python does,
+              macOS included.
+            </p>
+          </details>
         </div>
+      </section>
 
-        <div class="card reveal mt-4 p-6">
-          <p class="text-sm text-muted">
-            Prefer the terminal? The command-line version needs no Qt.
-          </p>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-ink p-4 font-mono text-xs text-body"><code>pip install -r requirements.txt
+      <!-- ===================== download ===================== -->
+      <section id="download" class="border-t border-line/60 bg-panel/30">
+        <div class="mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div class="reveal flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <div>
+              <p class="eyebrow eyebrow-tick">Download</p>
+              <h2 class="display h2 mt-5">Version 1.0.0</h2>
+              <p class="mt-5 max-w-2xl leading-relaxed text-muted">
+                Built and packaged by CI on Windows and Ubuntu 22.04 — the same
+                workflow every time, from a tagged commit you can read.
+              </p>
+            </div>
+            <a
+              href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/tag/v1.0.0"
+              class="flex items-center gap-1.5 text-sm text-cyan transition-colors hover:text-body"
+            >
+              Release notes
+              <svg
+                width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+
+          <!-- The visitor's own build, first and large. js/main.js rewrites
+               every field from the detected platform; the markup ships the
+               Windows one, which is both the larger audience and the same
+               fallback the hero button uses when scripting is off. The full
+               index below never changes, so nothing is ever only reachable
+               through this panel. -->
+          <div class="card card-featured reveal mt-10 p-7 sm:p-9">
+            <!-- Stacked on a phone: side by side, the 56px tile leaves the
+                 pill about 250px and it breaks across two lines. -->
+            <div class="flex flex-col items-start gap-5 sm:flex-row sm:gap-6">
+              <span class="icon-tile h-14 w-14 shrink-0" aria-hidden="true">
+                <svg data-dl-icon="windows" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 5.8 10.2 4.8v6.7H3V5.8Zm8.4-1.2L21 3.2v8.3h-9.6V4.6ZM3 12.7h7.2v6.7L3 18.4v-5.7Zm8.4 0H21v8.3l-9.6-1.4v-6.9Z" />
+                </svg>
+                <svg
+                  data-dl-icon="linux" class="hidden" width="26" height="26" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 2.8 20.6 7.4v9.2L12 21.2 3.4 16.6V7.4L12 2.8Z" />
+                  <path d="m3.7 7.6 8.3 4.5 8.3-4.5" />
+                  <path d="M12 12.1v9" />
+                </svg>
+                <svg
+                  data-dl-icon="terminal" class="hidden" width="26" height="26" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2.6" y="5.2" width="18.8" height="13.6" rx="2" />
+                  <path d="m7 10.2 2.4 2-2.4 2" />
+                  <path d="M12.6 14.6h4.4" />
+                </svg>
+              </span>
+
+              <div class="min-w-0 flex-1">
+                <p id="dl-badge" class="pill">
+                  <span
+                    class="inline-block h-1.5 w-1.5 rounded-full bg-cyan"
+                    aria-hidden="true"
+                  ></span>
+                  Recommended for your computer
+                </p>
+                <h3 data-dl-os class="h3 mt-4 font-semibold">Windows 10 / 11</h3>
+                <p data-dl-kind class="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                  A per-user installer, so there is no administrator prompt and
+                  nothing outside your own account is touched.
+                </p>
+                <p class="mt-3 font-mono text-xs text-muted">
+                  <span data-dl-file>Driftgram-1.0.0-Setup.exe</span>
+                  <span data-dl-sep> · </span><span data-dl-size>27 MB</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-7 flex flex-wrap items-center gap-3">
+              <a
+                id="dl-button"
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-Setup.exe"
+                class="btn btn-primary py-3.5 text-[0.95rem] max-sm:w-full"
+              >
+                <svg
+                  id="dl-button-icon"
+                  width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M12 3.8v11.4" />
+                  <path d="m7.6 11 4.4 4.4 4.4-4.4" />
+                  <path d="M4.4 19.4h15.2" />
+                </svg>
+                <span id="dl-button-label">Download for Windows</span>
+              </a>
+              <!-- Hidden by js/main.js when the primary button is already the
+                   terminal route, which is what a visitor with no packaged
+                   build gets - two buttons to the same anchor is just noise. -->
+              <a
+                id="dl-secondary"
+                href="#cli"
+                class="btn btn-ghost py-3.5 text-[0.95rem] max-sm:w-full"
+                >Use the terminal instead</a
+              >
+            </div>
+
+            <!-- Platform-specific, and the one thing a first-time user hits
+                 that looks like something going wrong. Better here, at the
+                 moment of downloading, than only in the limits section. -->
+            <p
+              id="dl-note"
+              class="mt-6 flex gap-2.5 border-t border-line pt-5 text-sm leading-relaxed text-muted"
+            >
+              <svg
+                class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                stroke-linejoin="round" style="color: var(--color-attention)" aria-hidden="true"
+              >
+                <path d="M12 4.2 21 19.8H3L12 4.2Z" />
+                <path d="M12 10.4v3.4" />
+                <path d="M12 16.8h.01" />
+              </svg>
+              <span data-dl-note>
+                Windows shows a SmartScreen warning the first time, because the
+                installer isn&rsquo;t code-signed. Choose
+                <span class="text-body">More info → Run anyway</span>.
+              </span>
+            </p>
+          </div>
+
+          <h3 class="reveal mt-12 text-sm font-semibold">Every build</h3>
+
+          <ul class="card reveal mt-4 overflow-hidden">
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-Setup.exe"
+                class="dl-row"
+              >
+                <span class="icon-tile shrink-0" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 5.8 10.2 4.8v6.7H3V5.8Zm8.4-1.2L21 3.2v8.3h-9.6V4.6ZM3 12.7h7.2v6.7L3 18.4v-5.7Zm8.4 0H21v8.3l-9.6-1.4v-6.9Z" />
+                  </svg>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-medium">Windows 10 / 11</span>
+                  <span class="mt-0.5 block truncate font-mono text-xs text-muted"
+                    >Driftgram-1.0.0-Setup.exe</span
+                  >
+                </span>
+                <span class="shrink-0 font-mono text-xs text-muted max-sm:hidden">27 MB</span>
+                <svg
+                  class="dl-arrow shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M12 3.8v11.4" />
+                  <path d="m7.6 11 4.4 4.4 4.4-4.4" />
+                  <path d="M4.4 19.4h15.2" />
+                </svg>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/Driftgram-1.0.0-x86_64.AppImage"
+                class="dl-row"
+              >
+                <span class="icon-tile shrink-0" aria-hidden="true">
+                  <svg
+                    width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+                  >
+                    <path d="M12 2.8 20.6 7.4v9.2L12 21.2 3.4 16.6V7.4L12 2.8Z" />
+                    <path d="m3.7 7.6 8.3 4.5 8.3-4.5" />
+                    <path d="M12 12.1v9" />
+                  </svg>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-medium">
+                    Any Linux
+                    <span class="ml-1.5 text-xs font-normal text-muted max-sm:hidden">AppImage, nothing to install</span>
+                  </span>
+                  <span class="mt-0.5 block truncate font-mono text-xs text-muted"
+                    >Driftgram-1.0.0-x86_64.AppImage</span
+                  >
+                </span>
+                <span class="shrink-0 font-mono text-xs text-muted max-sm:hidden">69 MB</span>
+                <svg
+                  class="dl-arrow shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M12 3.8v11.4" />
+                  <path d="m7.6 11 4.4 4.4 4.4-4.4" />
+                  <path d="M4.4 19.4h15.2" />
+                </svg>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/download/v1.0.0/driftgram_1.0.0_amd64.deb"
+                class="dl-row"
+              >
+                <span class="icon-tile shrink-0" aria-hidden="true">
+                  <svg
+                    width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+                  >
+                    <path d="M3.4 7.6h17.2v11a2 2 0 0 1-2 2H5.4a2 2 0 0 1-2-2v-11Z" />
+                    <path d="M2.8 4.2h18.4v3.4H2.8z" />
+                    <path d="M10 12h4" />
+                  </svg>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-medium">
+                    Debian / Ubuntu / Mint
+                    <span class="ml-1.5 text-xs font-normal text-muted max-sm:hidden">apt package</span>
+                  </span>
+                  <span class="mt-0.5 block truncate font-mono text-xs text-muted"
+                    >driftgram_1.0.0_amd64.deb</span
+                  >
+                </span>
+                <span class="shrink-0 font-mono text-xs text-muted max-sm:hidden">59 MB</span>
+                <svg
+                  class="dl-arrow shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M12 3.8v11.4" />
+                  <path d="m7.6 11 4.4 4.4 4.4-4.4" />
+                  <path d="M4.4 19.4h15.2" />
+                </svg>
+              </a>
+            </li>
+          </ul>
+
+          <div class="mt-4 grid gap-4 lg:grid-cols-2">
+            <!-- min-w-0: a grid item defaults to min-width:auto, so the long
+                 clone URL inside the <pre> below sets the track's minimum and
+                 drags the whole page wider than a phone. Letting the item
+                 shrink is what lets the <pre> scroll on its own instead. -->
+            <div id="cli" class="card reveal min-w-0 scroll-mt-28 p-7">
+              <h3 class="font-semibold">Prefer the terminal?</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">
+                The command-line version is the same engine without Qt, so it
+                runs anywhere Python does — macOS and headless servers included.
+              </p>
+              <pre class="mt-4 overflow-x-auto rounded-lg bg-ink p-4 font-mono text-xs text-body"><code>git clone https://github.com/devwithfarshi/driftgram-sync-tool
+cd driftgram-sync-tool
+pip install -r requirements.txt
 python -m src.main</code></pre>
+            </div>
+
+            <div class="card reveal min-w-0 p-7">
+              <h3 class="font-semibold">Before you run it</h3>
+              <!-- Each <li> is a flex row of exactly two things: the bullet,
+                   and one <span> holding all the prose. Without that wrapper
+                   every text run and inline link becomes its own flex item
+                   and the sentence lays out as columns. -->
+              <ul class="mt-3 space-y-2.5 text-sm leading-relaxed text-muted">
+                <li class="flex gap-2.5">
+                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted" aria-hidden="true"></span>
+                  <span>
+                    Nothing here asks for an account, a licence key or a payment
+                    method. If a page asks you for one, it isn&rsquo;t this
+                    project.
+                  </span>
+                </li>
+                <li class="flex gap-2.5">
+                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted" aria-hidden="true"></span>
+                  <span>
+                    Every file above is served by GitHub from the
+                    <a
+                      href="https://github.com/devwithfarshi/driftgram-sync-tool/releases/tag/v1.0.0"
+                      class="text-cyan underline decoration-cyan/40 underline-offset-2 transition-colors hover:decoration-cyan"
+                      >v1.0.0 release</a
+                    >, built by CI rather than uploaded from anyone&rsquo;s
+                    laptop.
+                  </span>
+                </li>
+                <li class="flex gap-2.5">
+                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted" aria-hidden="true"></span>
+                  <span>
+                    On Linux, make the AppImage executable before the first run:
+                    <span class="whitespace-nowrap font-mono text-xs text-body"
+                      >chmod +x Driftgram-1.0.0-x86_64.AppImage</span
+                    >
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== closing cta ===================== -->
+      <section class="relative isolate overflow-hidden border-t border-line/60">
+        <div class="mx-auto max-w-6xl px-5 py-20 text-center md:py-28">
+          <div class="reveal mx-auto max-w-2xl">
+            <img
+              src="assets/mark-192.png" alt="" width="52" height="52"
+              class="mx-auto rounded-xl"
+            />
+            <h2 class="display mt-7 text-3xl sm:text-4xl">
+              Stop hoping the drive holds out
+            </h2>
+            <p class="mx-auto mt-5 max-w-xl leading-relaxed text-muted">
+              Set it up once. It backs up quietly from then on, and everything is
+              still there in Telegram if this machine isn&rsquo;t.
+            </p>
+            <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <a href="#download" class="btn btn-primary py-3.5 text-[0.95rem]">
+                Download Driftgram
+              </a>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool"
+                class="btn btn-ghost py-3.5 text-[0.95rem]"
+                >Read the source</a
+              >
+            </div>
+          </div>
         </div>
       </section>
     </main>
 
     <!-- ===================== footer ===================== -->
     <footer class="border-t border-line">
-      <div
-        class="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center"
-      >
-        <div class="flex items-center gap-2.5">
-          <img src="assets/mark-192.png" alt="" width="26" height="26" class="rounded-md" />
-          <span class="text-sm text-muted">
-            Driftgram · <a
-              href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/LICENSE"
-              class="hover:text-body">MIT</a
-            >
-          </span>
+      <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="lg:col-span-2">
+          <div class="flex items-center gap-2.5">
+            <img src="assets/mark-192.png" alt="" width="28" height="28" class="rounded-md" />
+            <span class="display text-base">Driftgram</span>
+          </div>
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-muted">
+            Folders ↔ Telegram. A desktop app for Windows and Linux, free and
+            MIT licensed.
+          </p>
         </div>
 
-        <div class="flex flex-wrap gap-5 text-sm text-muted sm:ml-auto">
-          <a href="https://github.com/devwithfarshi/driftgram-sync-tool" class="hover:text-body">Source</a>
-          <a href="https://github.com/devwithfarshi/driftgram-sync-tool/releases" class="hover:text-body">Releases</a>
-          <a href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/CONTRIBUTING.md" class="hover:text-body">Contribute</a>
-          <a href="https://github.com/devwithfarshi/driftgram-sync-tool/issues" class="hover:text-body">Issues</a>
+        <div>
+          <h2 class="text-sm font-semibold">Product</h2>
+          <ul class="mt-4 space-y-2.5 text-sm text-muted">
+            <li><a href="#how" class="transition-colors hover:text-body">How it works</a></li>
+            <li><a href="#screens" class="transition-colors hover:text-body">The app</a></li>
+            <li><a href="#setup" class="transition-colors hover:text-body">Setup</a></li>
+            <li><a href="#faq" class="transition-colors hover:text-body">FAQ</a></li>
+            <li><a href="#download" class="transition-colors hover:text-body">Download</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-semibold">Project</h2>
+          <ul class="mt-4 space-y-2.5 text-sm text-muted">
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool"
+                class="transition-colors hover:text-body"
+                >Source</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/releases"
+                class="transition-colors hover:text-body"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/CONTRIBUTING.md"
+                class="transition-colors hover:text-body"
+                >Contribute</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/issues"
+                class="transition-colors hover:text-body"
+                >Issues</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/SECURITY.md"
+                class="transition-colors hover:text-body"
+                >Security</a
+              >
+            </li>
+          </ul>
         </div>
       </div>
 
-      <p class="mx-auto max-w-6xl px-5 pb-10 text-xs text-muted">
-        Not affiliated with Telegram. Driftgram uses
-        <a href="https://github.com/LonamiWebs/Telethon" class="hover:text-body">Telethon</a>
-        to talk to Telegram's public API with your own credentials.
-      </p>
+      <div class="border-t border-line/60">
+        <div
+          class="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-6 text-xs leading-relaxed text-muted sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p>
+            Not affiliated with Telegram. Driftgram uses
+            <a
+              href="https://github.com/LonamiWebs/Telethon"
+              class="transition-colors hover:text-body"
+              >Telethon</a
+            >
+            to talk to Telegram&rsquo;s public API with your own credentials.
+          </p>
+          <p>
+            <a
+              href="https://github.com/devwithfarshi/driftgram-sync-tool/blob/main/LICENSE"
+              class="transition-colors hover:text-body"
+              >MIT licensed</a
+            >
+          </p>
+        </div>
+      </div>
     </footer>
 
     <script src="js/main.js" defer></script>
