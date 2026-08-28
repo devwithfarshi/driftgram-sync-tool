@@ -1,4 +1,12 @@
-@import "tailwindcss";
+/* source(none) turns off Tailwind v4's automatic source detection, which scans
+   every non-ignored file in the project. It was harvesting ordinary English
+   words out of README.md - "absolute", "relative", "static", "block",
+   "inline" - and emitting utilities for them, so the stylesheet grew whenever
+   the prose changed and the build wasn't reproducible. The templates are
+   listed explicitly instead. */
+@import "tailwindcss" source(none);
+@source "../index.html";
+@source "../js/**/*.js";
 
 /* --------------------------------------------------------------------------
    Tokens. Every value here is lifted from docs/BRAND.md, which in turn
