@@ -1,0 +1,76 @@
+name: Feature request
+description: Suggest something Driftgram should do
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome. The most useful requests describe the situation you
+        were in, not just the feature — it often turns out there's a simpler
+        way to solve the underlying problem.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and discussions for this idea
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The situation, not the solution.
+      placeholder: |
+        I sync a folder of RAW photos, and I want the small JPEG previews
+        backed up but not the 40 MB originals. Right now I'd have to list
+        every extension by hand.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like it to do?
+      placeholder: |
+        A size-based ignore rule, e.g. "skip anything over 10 MB in this
+        folder only", alongside the existing pattern rules.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What have you tried instead?
+      description: Workarounds you're using now, or other tools that do this well.
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where would this live?
+      options:
+        - Desktop app
+        - Command line
+        - Both
+        - The sync engine itself
+        - Not sure
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Worth knowing before you ask
+
+        A few things are deliberate design decisions rather than gaps, and are
+        unlikely to change:
+
+        - **Nested or overlapping folders.** A file would belong to two roots,
+          so `config.root_conflict()` rejects them at the point you pick one.
+        - **Retroactive deletion sync.** Telegram keeps no record of a deleted
+          message, so a deletion that happened while Driftgram was closed can
+          never be detected afterwards. Both delete directions are live-only.
+        - **A shared built-in API key** so nobody has to visit
+          my.telegram.org. One key for every user means one rate limit and one
+          ban for every user.

@@ -1,5 +1,10 @@
 # Driftgram
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Build](https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml/badge.svg)](https://github.com/devwithfarshi/driftgram-sync-tool/actions/workflows/build.yml)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
+[![Platform: Windows | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)](#install)
+
 Keep the folders you choose backed up to your own Telegram account — and get
 changes back the other way too. Save a file on your PC and it appears in
 Telegram. Send a file to Telegram from your phone and it lands in the right
@@ -295,3 +300,23 @@ src/gui/              PySide6 desktop app:
 packaging/            PyInstaller spec, icon generation, installers, build.py
 tools/screenshot.py   Render every screen to PNG for review
 ```
+
+## Contributing
+
+Bug reports, documentation fixes and code are all welcome — see
+[CONTRIBUTING.md](CONTRIBUTING.md) for how to get set up, how the test suite
+works without a Telegram account, and the one invariant any change to the sync
+engine has to preserve.
+
+Please report security problems privately rather than as a public issue:
+[SECURITY.md](SECURITY.md). Everyone taking part is expected to follow the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Licence
+
+[MIT](LICENSE) — do what you like with it, including commercially, as long as
+the copyright notice comes along. No warranty.
+
+Driftgram is not affiliated with Telegram. It uses
+[Telethon](https://github.com/LonamiWebs/Telethon) to talk to Telegram's
+public MTProto API with your own credentials.

@@ -43,7 +43,7 @@ class StubSupervisor:
         return done((1284, 7_412_338_112))
 
     def account(self):
-        return done(Account(user_id=1, username="farshi", first_name="Salman", phone="+8801712345678"))
+        return done(Account(user_id=1, username="example_user", first_name="Alex", phone="+10000000000"))
 
     def connect(self):
         return done(LoginStep.AUTHORIZED)

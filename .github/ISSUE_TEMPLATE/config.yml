@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or general discussion
+    url: https://github.com/devwithfarshi/driftgram-sync-tool/discussions
+    about: For "how do I ...", setup help, and ideas that aren't a concrete request yet.
+  - name: Report a security vulnerability
+    url: https://github.com/devwithfarshi/driftgram-sync-tool/security/advisories/new
+    about: Please report security problems privately, not as a public issue. See SECURITY.md.

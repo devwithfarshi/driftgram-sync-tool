@@ -1,0 +1,112 @@
+name: Bug report
+description: Something isn't working the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this.
+
+        **Before you paste anything:** your log and settings can contain
+        personal folder paths, and `config.yaml` may contain your `api_hash`.
+        Never paste an `api_hash`, a phone number, or the contents of a
+        `.session` file into a public issue. Replace real paths with something
+        like `C:\Users\me\Documents` if you'd rather not share them.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and this isn't a duplicate
+          required: true
+        - label: I'm on the latest release (or a recent `main`)
+          required: true
+        - label: I have not included my `api_hash`, phone number or session file
+          required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+      placeholder: |
+        I saved a file in a watched folder and it never appeared in Saved
+        Messages. The Activity page showed nothing at all.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add D:\Documents as a folder
+        2. Wait for the first backup to finish
+        3. Create a new .docx inside it
+        4. Nothing happens
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frontend
+    attributes:
+      label: Which one are you using?
+      options:
+        - Desktop app (installer)
+        - Desktop app (from source, `python -m src.gui`)
+        - Command line (`python -m src.main`)
+        - Command-line restore (`python -m src.restore`)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux (AppImage)
+        - Linux (.deb)
+        - Linux (from source)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Driftgram version
+      description: Shown in the installer filename, or the commit you're on.
+      placeholder: "1.0.0, or commit edf86a4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines
+      description: |
+        Settings → *Driftgram's own files* → **Open this folder**, then open
+        `driftgram.log`. Paste the lines around the problem — not the whole
+        file. Scrub any paths you'd rather not share.
+      render: text
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Your settings (optional)
+      description: |
+        The `sync:` section of `config.yaml` is often the useful part —
+        conflict policy, size limit, ignore rules. **Delete the `telegram:`
+        section before pasting**, since it may contain your `api_hash`.
+      render: yaml
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: |
+        Screenshots, how large the folder is, whether it worked before, whether
+        it happens on a small test folder too.
