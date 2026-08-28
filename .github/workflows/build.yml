@@ -122,8 +122,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: driftgram-linux-packages
+          # Named, not dist/*.AppImage: a bare glob also matches any build
+          # tool cached in dist/, which is how appimagetool ended up attached
+          # to the v1.0.0 release.
           path: |
-            dist/*.AppImage
+            dist/Driftgram-*.AppImage
             dist/*.deb
           if-no-files-found: error
 

@@ -59,7 +59,11 @@ APPRUN
 chmod +x "$APPDIR/AppRun"
 
 echo "==> Fetching appimagetool"
-TOOL="$DIST/appimagetool-$ARCH.AppImage"
+# Cached in build/, NOT dist/. dist/ holds shippable artifacts only: CI uploads
+# it with a glob, so a build tool left there gets attached to the GitHub release
+# as though it were something a user should download.
+TOOL="$ROOT/build/appimagetool-$ARCH.AppImage"
+mkdir -p "$(dirname "$TOOL")"
 if [[ ! -x "$TOOL" ]]; then
   curl -fsSL -o "$TOOL" \
     "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$ARCH.AppImage"
