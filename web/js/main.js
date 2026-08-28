@@ -388,9 +388,12 @@
   // Beats, in the order they'd actually happen. Beat 2 is the one worth
   // showing: the echo of our own upload arriving back and being refused. That
   // refusal is the whole reason the tool doesn't loop.
+  // The prose for each beat lives in the step cards in index.html, where it
+  // is readable with or without scripting. This only carries what the drawing
+  // needs, plus the verdict string the gate prints - which has to match the
+  // card's, so the two are worth reading side by side when either changes.
   const BEATS = [
     {
-      caption: "You save a file in a watched folder. It isn't in the manifest, so it goes up.",
       file: "invoice.pdf",
       from: "local",
       verdict: "new · upload",
@@ -398,8 +401,6 @@
       pass: true,
     },
     {
-      caption:
-        "Telegram hands that upload straight back as a new message. The manifest already has this message id, so it stops here — this is the loop that never starts.",
       file: "invoice.pdf",
       from: "remote",
       verdict: "already known · ignore",
@@ -407,7 +408,6 @@
       pass: false,
     },
     {
-      caption: "Your phone sends a file. Nothing on record matches it, so it comes down into the right folder.",
       file: "receipt.jpg",
       from: "remote",
       verdict: "not on record · download",
@@ -415,7 +415,6 @@
       pass: true,
     },
     {
-      caption: "Both sides agree with the manifest. Nothing moves until content actually differs.",
       file: null,
       from: null,
       verdict: "up to date",
@@ -457,13 +456,13 @@
     const gateBox = document.getElementById("gate-box");
     const localDot = document.getElementById("node-local-dot");
     const remoteDot = document.getElementById("node-remote-dot");
-    const caption = document.getElementById("loop-caption");
+    const live = document.getElementById("loop-live");
     const stepLabel = document.getElementById("loop-step");
     const toggle = document.getElementById("loop-toggle");
     const toggleLabel = document.getElementById("loop-toggle-label");
     const iconPlay = document.getElementById("loop-icon-play");
     const iconPause = document.getElementById("loop-icon-pause");
-    const dotsBox = document.getElementById("loop-dots");
+    const stepsBox = document.getElementById("loop-steps");
 
     let index = 0;
     let raf = null;
@@ -480,33 +479,32 @@
 
     const shouldRun = () => !userPaused && onScreen && !hovered && docVisible;
 
-    /* -- dots ---------------------------------------------------------- */
-    const dots = BEATS.map((_, i) => {
-      const dot = document.createElement("button");
-      dot.type = "button";
-      dot.className =
-        "h-2.5 w-2.5 rounded-full border border-line bg-transparent transition-colors";
-      dot.setAttribute("aria-label", `Show step ${i + 1} of ${BEATS.length}`);
-      dot.addEventListener("click", () => {
+    /* -- step cards ---------------------------------------------------- */
+
+    // The cards are already in the markup, in order, with their own text.
+    // Nothing here creates or writes that text - it only wires up which one
+    // is current, so the two can never say different things.
+    const cards = stepsBox ? Array.from(stepsBox.querySelectorAll("[data-step]")) : [];
+
+    cards.forEach((card, i) => {
+      card.addEventListener("click", () => {
         // Jumping is a deliberate act: hold there rather than sliding on to
         // the next beat a second later.
         index = i;
         setUserPaused(true);
         showStatic();
       });
-      dotsBox?.appendChild(dot);
-      return dot;
     });
 
-    const paintDots = () => {
-      dots.forEach((dot, i) => {
-        const on = i === index;
-        dot.style.backgroundColor = on ? "var(--color-cyan)" : "transparent";
-        dot.style.borderColor = on ? "var(--color-cyan)" : "var(--color-line)";
-        if (on) dot.setAttribute("aria-current", "true");
-        else dot.removeAttribute("aria-current");
+    const paintSteps = () => {
+      cards.forEach((card, i) => {
+        if (i === index) card.setAttribute("aria-current", "step");
+        else card.removeAttribute("aria-current");
       });
     };
+
+    const titleOf = (i) =>
+      cards[i]?.querySelector(".step-title")?.textContent.trim() || "";
 
     /* -- drawing ------------------------------------------------------- */
     const place = (x, opacity) => {
@@ -516,7 +514,10 @@
 
     const render = (beat, i) => {
       stepLabel.textContent = `step ${i + 1} of ${BEATS.length}`;
-      caption.textContent = beat.caption;
+      // Announced rather than shown: the card holding this step's prose is
+      // already on screen and doesn't move, so there is nothing to re-read
+      // visually - only the fact that the diagram has advanced.
+      if (live) live.textContent = `Step ${i + 1} of ${BEATS.length}: ${titleOf(i)}`;
       verdict.textContent = beat.verdict;
       verdict.setAttribute("fill", beat.verdictColor);
       gateBox.setAttribute("stroke", beat.pass === false ? "#9AA7B6" : "#38B6F1");
@@ -533,7 +534,7 @@
       packetBox.setAttribute("fill", beat.pass === false ? "#9AA7B6" : "#38B6F1");
 
       if (beat.file) packetLabel.textContent = beat.file;
-      paintDots();
+      paintSteps();
     };
 
     // The resting frame for a beat: where the packet ended up once that beat

@@ -419,6 +419,70 @@
     background-color: var(--color-ink);
   }
 
+  /* ---------------------------------------------------------- loop steps -- */
+
+  /* The four beats, all readable at once. The diagram can only show one at a
+     time, and nobody should have to sit through four turns of an animation
+     to learn the cycle - or, with JS off, be left with a single frozen
+     caption. These are the real navigation; clicking one drives the diagram,
+     and the diagram lights the matching card as it plays. */
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+    width: 100%;
+    height: 100%;
+    padding: 1.25rem;
+    text-align: left;
+    border-radius: 0.875rem;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-panel);
+    transition: border-color 200ms ease, background-color 200ms ease;
+  }
+
+  .step-card:hover {
+    border-color: var(--color-muted);
+    background-color: var(--color-raised);
+  }
+
+  /* aria-current is the state, so it may as well be the selector - the style
+     cannot then disagree with what a screen reader is told. */
+  .step-card[aria-current="step"] {
+    border-color: var(--color-cyan);
+    background-color: var(--color-raised);
+  }
+
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    color: var(--color-muted);
+    transition: color 200ms ease;
+  }
+
+  .step-card[aria-current="step"] .step-num {
+    color: var(--color-cyan);
+  }
+
+  .step-verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+  }
+
+  .step-verdict::before {
+    content: "";
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    /* Set per card, matching the verdict colour the diagram prints. */
+    background-color: var(--verdict, var(--color-cyan));
+  }
+
   /* --------------------------------------------------------------- swipe -- */
 
   /* Two things here are wider than a phone and scroll sideways inside their
