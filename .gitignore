@@ -87,3 +87,19 @@ screenshots/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# ---------------------------------------------------------------------------
+# Landing page (web/)
+# ---------------------------------------------------------------------------
+
+# Tailwind's toolchain.
+web/node_modules/
+
+# The compiled stylesheet IS committed, so the page can be served as plain
+# static files with no build step. The build/ + dist/ rules above are written
+# for PyInstaller's output and match a directory called dist at ANY depth, so
+# without these two lines web/dist/styles.css is silently dropped and the
+# deployed site loads with no CSS. Git cannot re-include a file whose parent
+# directory is excluded, so the directory has to be un-ignored first.
+!web/dist/
+!web/dist/styles.css

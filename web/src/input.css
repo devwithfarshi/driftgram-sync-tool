@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+   Tokens. Every value here is lifted from docs/BRAND.md, which in turn
+   documents src/gui/theme.py - so the site cannot drift from the app. The
+   dark palette is the one used, because the app's own dark theme is what the
+   screenshots on this page mostly show.
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #15181c;
+  --color-panel: #1c2026;
+  --color-raised: #242a31;
+  --color-line: #313943;
+  --color-body: #e9eef4;
+  --color-muted: #9aa7b6;
+
+  --color-cyan: #38b6f1;
+  --color-blue: #1c82c4;
+
+  /* From the app's tray status colours: green is "up to date, nothing to do",
+     amber is "needs your attention". Reused here with the same meanings, so
+     the page teaches the app's own vocabulary. */
+  --color-settled: #3dbe6c;
+  --color-attention: #f2b33d;
+
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --radius-tile: 23%; /* the mark's corner radius, per BRAND.md */
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Keyboard focus stays visible everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-cyan) 35%, transparent);
+  }
+}
+
+@layer components {
+  /* Archivo carries a width axis. Running the display face at 125% width is
+     the one type move this page makes: it reads as engineering signage rather
+     than the default UI grotesque, without loading a second family. */
+  .display {
+    font-family: var(--font-sans);
+    font-stretch: 125%;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 0.98;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .card {
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-line);
+    border-radius: 0.875rem;
+  }
+
+  /* The full brand ramp appears only on primary actions and one hairline
+     rule - per BRAND.md, the gradient is an accent, never a background. */
+  .btn-primary {
+    background-image: linear-gradient(135deg, var(--color-cyan), var(--color-blue));
+    color: #06111a;
+    font-weight: 600;
+    transition: filter 160ms ease, transform 160ms ease;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.08);
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+  }
+
+  .rule-gradient {
+    height: 3px;
+    width: 180px;
+    background-image: linear-gradient(90deg, var(--color-cyan), var(--color-blue));
+  }
+
+  /* Scroll reveal. Sections start shifted and settle once seen.
+
+     Deliberately scoped to html.js, which an inline script in <head> sets. A
+     bare `.reveal { opacity: 0 }` would mean the whole page stays invisible if
+     the script fails to load or is blocked - the content has to be readable
+     without JS, and the animation is the enhancement on top. */
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html.js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .tab-active {
+    color: var(--color-body);
+    border-color: var(--color-cyan);
+    background-color: var(--color-raised);
+  }
+}

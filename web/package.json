@@ -1,0 +1,16 @@
+{
+  "name": "driftgram-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page for Driftgram",
+  "license": "MIT",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./dist/styles.css --minify",
+    "dev": "tailwindcss -i ./src/input.css -o ./dist/styles.css --watch",
+    "serve": "python -m http.server 4173"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}
