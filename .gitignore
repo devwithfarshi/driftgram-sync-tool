@@ -89,17 +89,33 @@ desktop.ini
 .DS_Store
 
 # ---------------------------------------------------------------------------
-# Landing page (web/)
+# Landing page (web/) and any other Node tooling
 # ---------------------------------------------------------------------------
 
-# Tailwind's toolchain.
-web/node_modules/
+# Unanchored, so it also covers tooling added anywhere else later.
+# web/package-lock.json is tracked deliberately: it pins the Tailwind version
+# the committed stylesheet was built with.
+node_modules/
 
-# The compiled stylesheet IS committed, so the page can be served as plain
-# static files with no build step. The build/ + dist/ rules above are written
-# for PyInstaller's output and match a directory called dist at ANY depth, so
-# without these two lines web/dist/styles.css is silently dropped and the
-# deployed site loads with no CSS. Git cannot re-include a file whose parent
-# directory is excluded, so the directory has to be un-ignored first.
+# Only web/dist/styles.css belongs in the repo, and getting there takes three
+# lines. The build/ and dist/ rules above are written for PyInstaller's output
+# and match a directory named dist at ANY depth, so web/dist is excluded by
+# default and the deployed page would load with no CSS at all. Git cannot
+# re-include a file whose parent directory is excluded, so:
+#   1. un-ignore the directory itself
+#   2. re-ignore everything inside it, so no other build output sneaks in
+#   3. allow the one file that is genuinely source-of-record
 !web/dist/
+web/dist/*
 !web/dist/styles.css
+
+# npm/yarn/pnpm crash logs, written into the working directory on failure.
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+
+# Deploy metadata. Both hold a project id linking the checkout to an account,
+# which is per-developer rather than part of the project.
+.vercel/
+.netlify/
