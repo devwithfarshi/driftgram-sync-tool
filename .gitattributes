@@ -1,0 +1,21 @@
+# Without this file git guesses per file and each developer's core.autocrlf
+# setting decides the rest, so the same checkout differs between machines.
+
+# Normalise line endings inside the repository. Working-tree endings still
+# follow the platform, except where a rule below pins them deliberately.
+* text=auto
+
+# Shell scripts must stay LF wherever they are checked out. CI runs these on
+# Ubuntu to build the AppImage and the .deb, and a CRLF shebang fails with
+# "bad interpreter: No such file or directory" - a message that looks nothing
+# like the line-ending problem it actually is.
+*.sh text eol=lf
+
+# Committed build output. Tailwind writes LF, and web/dist/styles.css is
+# minified onto a single line, so a CRLF working copy reports the whole
+# stylesheet as modified after every build.
+*.css text eol=lf
+
+# Never convert or attempt to merge these.
+*.png binary
+*.ico binary
