@@ -15,6 +15,10 @@ files go to **Saved Messages** by default: a private chat only you can see.
 Nothing passes through anybody else's server, and there is no account to
 create, no subscription, and no storage limit beyond Telegram's own.
 
+<p align="center">
+  <img src="docs/images/status.png" alt="Driftgram's Status page: everything backed up, 1,284 files, 6.9 GB across 3 watched folders, with recent activity listed below" width="820">
+</p>
+
 There are two ways to use it:
 
 | | |
@@ -72,6 +76,10 @@ open *API development tools*, fill in any app name, and copy two values
 > every Driftgram user would break at once. Your own key can't be taken away
 > by someone else's misuse.
 
+![The setup wizard's Connect to Telegram step, with a button that opens
+my.telegram.org and two boxes for the api_id and api_hash it gives
+you](docs/images/wizard-credentials.png)
+
 **2. Sign in.** Phone number, then the login code Telegram sends you (it
 arrives in the Telegram app if you're signed in elsewhere, otherwise by SMS),
 then your two-step password if you have one.
@@ -90,20 +98,36 @@ you can close the window and leave it to work.
 ## The app, page by page
 
 **Status** — whether everything is backed up, what's transferring right now,
-how many files and how much data. Pause and resume here.
+how many files and how much data. Pause and resume here. (Pictured at the top
+of this page.)
 
 **Folders** — add and remove folders, and edit each one's skip rules.
 Removing a folder only stops watching it; the copies already in Telegram are
-left alone.
+left alone. A folder on a drive that isn't plugged in is flagged rather than
+treated as a mass deletion.
+
+![The Folders page in dark mode, listing three watched folders with their
+Telegram tags and how many skip rules each has](docs/images/folders-dark.png)
 
 **Activity** — a plain-language log of what has happened, with errors and
 anything needing attention picked out in colour.
 
+![The Activity page, showing backed-up files in black, a missing folder in red,
+and a kept-both conflict and a skipped oversize file in
+amber](docs/images/activity.png)
+
 **Restore** — see everything Telegram is holding, including files you've since
 deleted from your computer, and bring back whatever you need. Tick and click.
 
+![The Restore page listing five files held in Telegram, three marked Missing
+and two Already here, with a Restore 3 files
+button](docs/images/restore.png)
+
 **Settings** — account, where backups go, conflict handling, deletion
 mirroring, start-at-login, and a few advanced knobs.
+
+Driftgram follows your system's light or dark setting — the Folders shot above
+is dark mode, the rest are light.
 
 ## If the same file changes in both places
 
@@ -247,7 +271,10 @@ lock.
 
 `python tools/screenshot.py <dir> [--dark]` renders every screen to PNG
 against a stub supervisor, so layout can be reviewed without a Telegram
-account.
+account. The images in `docs/images/` come from there — regenerate them the
+same way if you change the look of a page. Run it with a real display rather
+than `QT_QPA_PLATFORM=offscreen`, which on some setups finds no fonts and
+renders every label as empty boxes.
 
 ## Building installers
 
